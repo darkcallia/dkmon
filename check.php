@@ -1,7 +1,7 @@
 <?php
 //darkcallia
 //2017.02.10
-//Для версии скрипта 7
+//Для версии скрипта 7.
 
 //чтение массивов
 $f=file_get_contents("checkarray1.txt");
