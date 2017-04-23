@@ -1,0 +1,110 @@
+    .block {
+    padding: 0;
+    font-size: 10px;
+    font-family: 'Calibri';
+    width: 800px;
+    }
+    .block .element{
+    border: solid 1px black;
+    margin: 0px 3px 3px 0px;
+    padding: 0px 0px 0px 0px;
+    float: left;
+    height: 42px;
+    width: 128px;
+    background: #bec4bf;
+    }
+    .block .element:hover{
+    border: solid 1px yellow;
+    margin: 0px 3px 3px 0px;
+    padding: 0;
+    float: left;
+    height: 42px;
+    width: 128px;
+    background: #bec4bf;
+    }
+    .block .elementlist{
+    border: solid 1px black;
+    margin: 0px 3px 3px 0px;
+    padding: 0px 0px 0px 0px;
+    float: left;
+    height: 42px;
+    width: 794px;
+    background: #bec4bf;
+    }
+    .block .elementlist:hover{
+    border: solid 1px yellow;
+    margin: 0px 3px 3px 0px;
+    padding: 0;
+    float: left;
+    height: 42px;
+    width: 794px;
+    background: #bec4bf;
+    }
+    .block .dat{
+    text-align: center;
+    width: 100%;
+    height: 20px;   
+    line-height: 21px;
+    font-size: 16px;
+    cursor: default;
+    }
+    .block .datlist{
+    text-align: center;
+    width: 100%;
+    height: 20px;
+    line-height: 19px;
+    font-size: 14px;
+    color: brown;
+    cursor: default;
+    }
+    .block .text{
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 13px;
+    line-height: 11px;
+    font-size: 10px;
+    background: #5d5e62;   
+    color: #FFFFFF; 
+    cursor: default;
+    }
+    .block .note{
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 9px;  
+    line-height: 8px;
+    font-size: 8px;
+    background: #7d9b9b;   
+    color: #FFFFFF; 
+    cursor: default;
+    }
+    .block .dat:hover::after {
+    content: attr(data-title); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    left: 0; right: 0; bottom: 50%; /* Положение подсказки */
+    z-index: 1; /* Отображаем подсказку поверх других элементов */
+    background: rgba(0,42,167,0.6); /* Полупрозрачный цвет фона */
+    color: #fff; /* Цвет текста */
+    text-align: center; /* Выравнивание текста по центру */
+    font-family: Arial, sans-serif; /* Гарнитура шрифта */
+    font-size: 20px; /* Размер текста подсказки */
+    padding: 5px 10px; /* Поля */
+    border: 1px solid #333; /* Параметры рамки */
+    }
+    .block .datlist:hover::after {
+    content: attr(data-title); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    left: 0; right: 0; bottom: 50%; /* Положение подсказки */
+    z-index: 1; /* Отображаем подсказку поверх других элементов */
+    background: rgba(0,42,167,0.6); /* Полупрозрачный цвет фона */
+    color: #fff; /* Цвет текста */
+    text-align: center; /* Выравнивание текста по центру */
+    font-family: Arial, sans-serif; /* Гарнитура шрифта */
+    font-size: 20px; /* Размер текста подсказки */
+    padding: 5px 10px; /* Поля */
+    border: 1px solid #333; /* Параметры рамки */
+    }
+
