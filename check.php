@@ -675,17 +675,17 @@ echo "<form action='' method='post'>";
 foreach ($array1 as $key=>$val) {
  if (in_array($key,$arrayemail))
   {
-   $email="$tags<img src=\"email.png\" width=\"12\" height=\"8\">";
+   $email="$tags<img src=\"img/email.png\" width=\"12\" height=\"8\">";
   } else
   {
-   $email="$tags<img src=\"noemail.png\" width=\"12\" height=\"8\">";
+   $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">";
   }
  if (in_array($key,$arrayphone))
   {
-   $phone="$tags<img src=\"phone.png\" width=\"8\" height=\"12\">";
+   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">";
   } else
   {
-   $phone="$tags<img src=\"nophone.png\" width=\"8\" height=\"12\">";
+   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">";
   }
  if (in_array($key,$array3))
   {
@@ -706,17 +706,17 @@ echo "<form action='' method='post'>";
 foreach ($array1port as $key=>$val) {
  if (in_array($key,$arrayemailport))
   {
-   $email="$tags<img src=\"email.png\" width=\"12\" height=\"8\">";
+   $email="$tags<img src=\"img/email.png\" width=\"12\" height=\"8\">";
   } else
   {
-   $email="$tags<img src=\"noemail.png\" width=\"12\" height=\"8\">";
+   $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">";
   }
  if (in_array($key,$arrayphoneport))
   {
-   $phone="$tags<img src=\"phone.png\" width=\"8\" height=\"12\">";
+   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">";
   } else
   {
-   $phone="$tags<img src=\"nophone.png\" width=\"8\" height=\"12\">";
+   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">";
   }
  if (in_array($key,$array3port))
   {
