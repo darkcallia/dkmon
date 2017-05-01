@@ -393,7 +393,7 @@ echo ("<div class='block'>");
 //service_motiontime();
 //service_motionactive();
 //service_light();
-service_hddsize("/home/ro-0.35-disk1.txt", 30, "Диск H БД РО", "База данных РО. Место на диске H (папка с базой)");
+service_hddsize("data/ro-0.35-disk1.txt", 30, "Диск H БД РО", "База данных РО. Место на диске H (папка с базой)");
 /*----------------------------------------------*/
 function service_temperature()
 {
