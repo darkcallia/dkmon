@@ -394,6 +394,14 @@ echo ("<div class='block'>");
 //service_motionactive();
 //service_light();
 service_hddsize("data/ro-0.35-disk1.txt", 30, "Диск H БД РО", "База данных РО. Место на диске H (папка с базой)");
+service_hddsize("data/ro-0.35-disk2.txt", 30, "Диск M БД РО", "База данных РО. Место на диске M (архивы баз)");
+service_hddsize("data/f1-1.35-disk1.txt", 30, "Диск C БД Ф1", "База данных Филиала 1. Место на диске C (папка с базой и архивы)");
+service_hddsize("data/audio-0.140-disk.txt", 10, "Записи с АТС РО", "Сервер с записями телефонных разговоров и горячей линии. Место на диске E.");
+service_hddsize("data/f1-1.205-disk1.txt", 2, "Записи с АТС Ф1", "Сервер с записями телефонных разговоров и горячей линии. Место на диске D.");
+service_hddsize("data/ro-0.209-disk1.txt", 200, "Основной диск", "Дисковый массив Iomega 10.51.0.209. Хранятся все архивы РО и БД Филиалов. Основной диск.");
+service_hddsize("data/ro-0.209-disk2.txt", 100, "Диск старых архивов", "Дисковый массив Iomega 10.51.0.209. Хранятся все архивы РО и БД Филиалов. Диск старых архивов.");
+service_hddsize("data/ro-0.203-disk1.txt", 7, "Файловый РО. Первый диск", "Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Первый диск.");
+service_hddsize("data/ro-0.203-disk2.txt", 7, "Файловый РО. Второй диск", "Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Второй диск.");
 /*----------------------------------------------*/
 function service_temperature()
 {
@@ -472,7 +480,6 @@ function service_hddsize($disk, $limit, $title, $comment)
 {
  /* Диск 1--------------*/
  $checkdisk=file_get_contents($disk);
- echo ("test- $checkdisk -test");
  if ($checkdisk > $limit)
   {
    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
