@@ -393,7 +393,7 @@ echo ("<div class='block'>");
 //service_motiontime();
 //service_motionactive();
 //service_light();
-service_hddsize("/home/ro-0.35-disk1.txt", 30, "", "База данных РО. Место на диске H (папка с базой)");
+service_hddsize("/home/ro-0.35-disk1.txt", 30, "Диск H БД РО", "База данных РО. Место на диске H (папка с базой)");
 /*----------------------------------------------*/
 function service_temperature()
 {
@@ -472,6 +472,7 @@ function service_hddsize($disk, $limit, $title, $comment)
 {
  /* Диск 1--------------*/
  $checkdisk=file_get_contents($disk);
+ echo ($checkdisk);
  if ($checkdisk > $limit)
   {
    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
