@@ -472,7 +472,7 @@ function service_hddsize($disk, $limit, $title, $comment)
 {
  /* Диск 1--------------*/
  $checkdisk=file_get_contents($disk);
- echo ($checkdisk);
+ echo ("test- $checkdisk -test");
  if ($checkdisk > $limit)
   {
    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
