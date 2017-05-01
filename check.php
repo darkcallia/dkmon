@@ -389,10 +389,10 @@ if(isset($_POST['portdel']))
 echo ("<div class='block'>");
 /*----------------------------------------------*/
 /* перечисляем функции опроса датчиков, сервисов*/
-//service_temperature();
-//service_motiontime();
-//service_motionactive();
-//service_light();
+service_temperature();
+service_motiontime();
+service_motionactive();
+service_light();
 service_hddsize("data/ro-0.35-disk1.txt", 30, "Диск H БД РО", "База данных РО. Место на диске H (папка с базой)");
 service_hddsize("data/ro-0.35-disk2.txt", 30, "Диск M БД РО", "База данных РО. Место на диске M (архивы баз)");
 service_hddsize("data/f1-1.35-disk1.txt", 30, "Диск C БД Ф1", "База данных Филиала 1. Место на диске C (папка с базой и архивы)");
@@ -402,83 +402,97 @@ service_hddsize("data/ro-0.209-disk1.txt", 200, "Основной диск", "Д
 service_hddsize("data/ro-0.209-disk2.txt", 100, "Диск старых архивов", "Дисковый массив Iomega 10.51.0.209. Хранятся все архивы РО и БД Филиалов. Диск старых архивов.");
 service_hddsize("data/ro-0.203-disk1.txt", 7, "Файловый РО. Первый диск", "Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Первый диск.");
 service_hddsize("data/ro-0.203-disk2.txt", 7, "Файловый РО. Второй диск", "Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Второй диск.");
+service_trafic("data/ro-to-f1-traf.txt", 20, "Траффик РО -> Ф1", "Траффик от РО до Ф1.");
+service_trafic("data/f1-to-ro-traf.txt", 20, "Траффик Ф1 -> РО", "Траффик от Ф1 до РО.");
 /*----------------------------------------------*/
 function service_temperature()
 {
  /* датчик температуры--*/
- $temperature2=file_get_contents("http://10.51.0.251/");
- $t2=substr($temperature2, strpos($temperature2, "<T1>")+4, strpos($temperature2, "</T1>")-(strpos($temperature2, "<T1>")+4));
- $t2_uptime=substr($temperature2, strpos($temperature2, "<T1-uptime>")+11, strpos($temperature2, "</T1-uptime>")-(strpos($temperature2, "<T1-uptime>")+11));
- $t2_uptime_day=strtok($t2_uptime, ".");
- $t2_uptime_hour=strtok(".");
- if ($t2 < 21)
-  {
-   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
-  } else
-  {
-   echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
-  }
- echo (" data-title='Датчик температуры работает уже $t2_uptime_day дн. и $t2_uptime_hour час.'>$t2&deg;C");
- echo ("</div><div class='text'>Температура СП РО");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
+ if ( file_exists("http://10.51.0.251/") )
+ {
+  $temperature2=file_get_contents("http://10.51.0.251/");
+  $t2=substr($temperature2, strpos($temperature2, "<T1>")+4, strpos($temperature2, "</T1>")-(strpos($temperature2, "<T1>")+4));
+  $t2_uptime=substr($temperature2, strpos($temperature2, "<T1-uptime>")+11, strpos($temperature2, "</T1-uptime>")-(strpos($temperature2, "<T1-uptime>")+11));
+  $t2_uptime_day=strtok($t2_uptime, ".");
+  $t2_uptime_hour=strtok(".");
+  if ($t2 < 21)
+   {
+    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
+   } else
+   {
+    echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
+   }
+  echo (" data-title='Датчик температуры работает уже $t2_uptime_day дн. и $t2_uptime_hour час.'>$t2&deg;C");
+  echo ("</div><div class='text'>Температура СП РО");
+  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+  echo ("</div></div>");
+ }
 }
 /*---------------------*/
 function service_motiontime()
 {
  /* Движение в СП2-------*/
- $checkmotion=file_get_contents("http://10.51.0.222/motionlog/checkmotion_clear.txt");
- echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'><font color=brown>$checkmotion</font>");
- echo ("</div><div class='text'>Посещение СП РО");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
+ if ( file_exists("http://10.51.0.222/motionlog/checkmotion_clear.txt") )
+ {
+  $checkmotion=file_get_contents("http://10.51.0.222/motionlog/checkmotion_clear.txt");
+  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'><font color=brown>$checkmotion</font>");
+  echo ("</div><div class='text'>Посещение СП РО");
+  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+  echo ("</div></div>");
+ }
 }
 /*----------------------*/
 function service_motionactive()
 {
  /* датчик движения -----------*/
- $motion=file_get_contents("http://10.51.0.251/");
- $M1=substr($motion, strpos($motion, "<M1>")+4, strpos($motion, "</M1>")-(strpos($motion, "<M1>")+4));
- $M1_1=strtok($M1, ".");
- $M1_2=strtok(".");
- $M1_uptime=substr($motion, strpos($motion, "<M1-uptime>")+11, strpos($motion, "</M1-uptime>")-(strpos($motion, "<M1-uptime>")+11));
- $M1_uptime_day=strtok($M1_uptime, ".");
- $M1_uptime_hour=strtok(".");
- if ($M1_1 < 1)
-  {
-   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
-   $M1="нет движения";
-  } else
-  {
-   echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
-   $M1="Движение! #$M1_2";
-  }
- echo (" data-title='Датчик Движения. Цифра от #1 до #600 означает длительность нахождения. Работает уже $M1_uptime_day дн. и $M1_uptime_hour час.'>$M1");
- echo ("</div><div class='text'>Движение СП РО");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
+ if ( file_exists("http://10.51.0.251/") )
+ {
+  $motion=file_get_contents("http://10.51.0.251/");
+  $M1=substr($motion, strpos($motion, "<M1>")+4, strpos($motion, "</M1>")-(strpos($motion, "<M1>")+4));
+  $M1_1=strtok($M1, ".");
+  $M1_2=strtok(".");
+  $M1_uptime=substr($motion, strpos($motion, "<M1-uptime>")+11, strpos($motion, "</M1-uptime>")-(strpos($motion, "<M1-uptime>")+11));
+  $M1_uptime_day=strtok($M1_uptime, ".");
+  $M1_uptime_hour=strtok(".");
+  if ($M1_1 < 1)
+   {
+    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
+    $M1="нет движения";
+   } else
+   {
+    echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
+    $M1="Движение! #$M1_2";
+   }
+  echo (" data-title='Датчик Движения. Цифра от #1 до #600 означает длительность нахождения. Работает уже $M1_uptime_day дн. и $M1_uptime_hour час.'>$M1");
+  echo ("</div><div class='text'>Движение СП РО");
+  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+  echo ("</div></div>");
+ }
 }
 /*---------------------*/
 function service_light()
 {
  /* датчик света -----------*/
- $light=file_get_contents("http://10.51.0.251/");
- $L1=substr($light, strpos($light, "<L1>")+4, strpos($light, "</L1>")-(strpos($light, "<L1>")+4));
- $L1_uptime=substr($light, strpos($light, "<L1-uptime>")+11, strpos($light, "</L1-uptime>")-(strpos($light, "<L1-uptime>")+11));
- $L1_uptime_day=strtok($L1_uptime, ".");
- $L1_uptime_hour=strtok(".");
- $rbgcalc=intval(($L1/1023*100)*2.55);
- $rbgcalcinverse=255-intval(($L1/1023*100)*2.55);
- echo ("<div class='element'><div class='dat' style='background:rgb($rbgcalc,0,0);background:linear-gradient(to bottom, #FFFFFF, rgb($rbgcalc,0,0));' ");
- echo (" data-title='Датчик освещенности. Диапазон от 0 до 1023. Свет включен в районе 800, выключен около 200. работает уже $L1_uptime_day дн. и $L1_uptime_hour час.'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
- echo ("</div><div class='text'>Освещение СП РО");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
+ if ( file_exists("http://10.51.0.251/") )
+ {
+  $light=file_get_contents("http://10.51.0.251/");
+  $L1=substr($light, strpos($light, "<L1>")+4, strpos($light, "</L1>")-(strpos($light, "<L1>")+4));
+  $L1_uptime=substr($light, strpos($light, "<L1-uptime>")+11, strpos($light, "</L1-uptime>")-(strpos($light, "<L1-uptime>")+11));
+  $L1_uptime_day=strtok($L1_uptime, ".");
+  $L1_uptime_hour=strtok(".");
+  $rbgcalc=intval(($L1/1023*100)*2.55);
+  $rbgcalcinverse=255-intval(($L1/1023*100)*2.55);
+  echo ("<div class='element'><div class='dat' style='background:rgb($rbgcalc,0,0);background:linear-gradient(to bottom, #FFFFFF, rgb($rbgcalc,0,0));' ");
+  echo (" data-title='Датчик освещенности. Диапазон от 0 до 1023. Свет включен в районе 800, выключен около 200. работает уже $L1_uptime_day дн. и $L1_uptime_hour час.'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
+  echo ("</div><div class='text'>Освещение СП РО");
+  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+  echo ("</div></div>");
+ }
 }
 /*---------------------*/
 function service_hddsize($disk, $limit, $title, $comment)
 {
- /* Диск 1--------------*/
+ /* Опрос свободного места на диске --------------*/
  $checkdisk=file_get_contents($disk);
  if ($checkdisk > $limit)
   {
@@ -493,145 +507,22 @@ function service_hddsize($disk, $limit, $title, $comment)
  echo ("</div></div>");
 }
 /*---------------------*/
-/* Диск 2--------------
-$checkdisk=file_get_contents("/mnt/shared/ro-0.35-disk2.txt");
-if ($checkdisk > 30)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='База данных РО. Место на диске M (архивы баз)'>$checkdisk GB");
-echo ("</div><div class='text'>Диск M БД РО");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/* Диск 3--------------
-$checkdisk=file_get_contents("/mnt/shared/f1-1.35-disk1.txt");
-if ($checkdisk > 30)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='База данных Филиала 1. Место на диске C (папка с базой и архивы)'>$checkdisk GB");
-echo ("</div><div class='text'>Диск C БД Ф1");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Диск ПК Телефонных записей-
-$checkdisk=file_get_contents("/mnt/shared/audio-0.140-disk.txt");
-if ($checkdisk > 10)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Сервер с записями телефонных разговоров и горячей линии. Место на диске E.'>$checkdisk GB");
-echo ("</div><div class='text'>Записи с АТС РО");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Диск АТС Ф1 D 10.51.1.205---
-$checkdisk=file_get_contents("/mnt/shared/f1-1.205-disk1.txt");
-if ($checkdisk > 2)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Сервер с записями телефонных разговоров и горячей линии. Место на диске D.'>$checkdisk GB");
-echo ("</div><div class='text'>Записи с АТС Ф1");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Диск 1 10.51.0.209---
-$checkdisk=file_get_contents("/mnt/shared/ro-0.209-disk1.txt");
-if ($checkdisk > 200)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Дисковый массив Iomega 10.51.0.209. Хранятся все архивы РО и БД Филиалов. Основной диск.'>$checkdisk GB");
-echo ("</div><div class='text'>Основной диск");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Диск 1 10.51.0.209---
-$checkdisk=file_get_contents("/mnt/shared/ro-0.209-disk2.txt");
-if ($checkdisk > 100)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Дисковый массив Iomega 10.51.0.209. Хранятся все архивы РО и БД Филиалов. Диск старых архивов.'>$checkdisk GB");
-echo ("</div><div class='text'>Диск старых архивов");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Диск 1 10.51.0.203---
-$checkdisk=file_get_contents("/mnt/shared/ro-0.203-disk1.txt");
-if ($checkdisk > 7)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Первый диск.'>$checkdisk GB");
-echo ("</div><div class='text'>Файловый РО. Первый диск");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Диск 2 10.51.0.203---
-$checkdisk=file_get_contents("/mnt/shared/ro-0.203-disk2.txt");
-if ($checkdisk > 7)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Второй диск.'>$checkdisk GB");
-echo ("</div><div class='text'>Файловый РО. Второй диск");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Траффик от ро до ф1--
-$traf=file_get_contents("/mnt/shared/ro-to-f1-traf.txt");
-if ($traf > 20)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Траффик от РО до Ф1.'>$traf Мбит/с");
-echo ("</div><div class='text'>Траффик РО -> Ф1");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
-/*---------------------*/
-/*Траффик от ф1 до ро--
-$traf=file_get_contents("/mnt/shared/f1-to-ro-traf.txt");
-if ($traf > 20)
- {
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
- } else
- {
-  echo ("<div class='element'><div class='dat' style='background:#d64760;'");
- }
-echo (" data-title='Траффик от Ф1 до РО.'>$traf Мбит/с");
-echo ("</div><div class='text'>Траффик Ф1 -> РО");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
+function service_trafic($speed, $limit, $title, $comment)
+{
+ /*Опрос траффика --*/
+ $traf=file_get_contents($speed);
+ if ($traf > $limit)
+  {
+   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
+  } else
+  {
+   echo ("<div class='element'><div class='dat' style='background:#d64760;'");
+  }
+ echo (" data-title='$comment'>$traf Мбит/с");
+ echo ("</div><div class='text'>$title");
+ echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+ echo ("</div></div>");
+}
 /*---------------------*/
 /* Квота---------------
 $checkquota=file_get_contents("/mnt/shared/result_clear.txt");
