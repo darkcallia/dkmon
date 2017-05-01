@@ -376,7 +376,7 @@ if(isset($_POST['portdel']))
 <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="favicon.ico">
 <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico">
 <meta HTTP-EQUIV="refresh" content="300" />
-<link rel="stylesheet" href="/check.css" />
+<link rel="stylesheet" href="check.css" />
 </head>
 <body style="background:#CFE8D8">
 
