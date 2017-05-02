@@ -3,6 +3,9 @@
 //2017.02.10
 //Для версии скрипта 7.
 
+//подключаем фунции
+include "functions.php";
+
 //чтение массивов
 $f=file_get_contents("checkarray1.txt");
 $array1=unserialize($f);
@@ -405,132 +408,6 @@ service_hddsize("data/ro-0.203-disk2.txt", 7, "Файловый РО. Второ
 service_trafic("data/ro-to-f1-traf.txt", 20, "Траффик РО -> Ф1", "Траффик от РО до Ф1.");
 service_trafic("data/f1-to-ro-traf.txt", 20, "Траффик Ф1 -> РО", "Траффик от Ф1 до РО.");
 /*----------------------------------------------*/
-function service_temperature()
-{
- /* датчик температуры--*/
- if ( file_exists("http://10.51.0.251/") )
- {
-  $temperature2=file_get_contents("http://10.51.0.251/");
-  $t2=substr($temperature2, strpos($temperature2, "<T1>")+4, strpos($temperature2, "</T1>")-(strpos($temperature2, "<T1>")+4));
-  $t2_uptime=substr($temperature2, strpos($temperature2, "<T1-uptime>")+11, strpos($temperature2, "</T1-uptime>")-(strpos($temperature2, "<T1-uptime>")+11));
-  $t2_uptime_day=strtok($t2_uptime, ".");
-  $t2_uptime_hour=strtok(".");
-  if ($t2 < 21)
-   {
-    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
-   } else
-   {
-    echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
-   }
-  echo (" data-title='Датчик температуры работает уже $t2_uptime_day дн. и $t2_uptime_hour час.'>$t2&deg;C");
-  echo ("</div><div class='text'>Температура СП РО");
-  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-  echo ("</div></div>");
- }
-}
-/*---------------------*/
-function service_motiontime()
-{
- /* Движение в СП2-------*/
- if ( file_exists("http://10.51.0.222/motionlog/checkmotion_clear.txt") )
- {
-  $checkmotion=file_get_contents("http://10.51.0.222/motionlog/checkmotion_clear.txt");
-  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'><font color=brown>$checkmotion</font>");
-  echo ("</div><div class='text'>Посещение СП РО");
-  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-  echo ("</div></div>");
- }
-}
-/*----------------------*/
-function service_motionactive()
-{
- /* датчик движения -----------*/
- if ( file_exists("http://10.51.0.251/") )
- {
-  $motion=file_get_contents("http://10.51.0.251/");
-  $M1=substr($motion, strpos($motion, "<M1>")+4, strpos($motion, "</M1>")-(strpos($motion, "<M1>")+4));
-  $M1_1=strtok($M1, ".");
-  $M1_2=strtok(".");
-  $M1_uptime=substr($motion, strpos($motion, "<M1-uptime>")+11, strpos($motion, "</M1-uptime>")-(strpos($motion, "<M1-uptime>")+11));
-  $M1_uptime_day=strtok($M1_uptime, ".");
-  $M1_uptime_hour=strtok(".");
-  if ($M1_1 < 1)
-   {
-    echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
-    $M1="нет движения";
-   } else
-   {
-    echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
-    $M1="Движение! #$M1_2";
-   }
-  echo (" data-title='Датчик Движения. Цифра от #1 до #600 означает длительность нахождения. Работает уже $M1_uptime_day дн. и $M1_uptime_hour час.'>$M1");
-  echo ("</div><div class='text'>Движение СП РО");
-  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-  echo ("</div></div>");
- }
-}
-/*---------------------*/
-function service_light()
-{
- /* датчик света -----------*/
- if ( file_exists("http://10.51.0.251/") )
- {
-  $light=file_get_contents("http://10.51.0.251/");
-  $L1=substr($light, strpos($light, "<L1>")+4, strpos($light, "</L1>")-(strpos($light, "<L1>")+4));
-  $L1_uptime=substr($light, strpos($light, "<L1-uptime>")+11, strpos($light, "</L1-uptime>")-(strpos($light, "<L1-uptime>")+11));
-  $L1_uptime_day=strtok($L1_uptime, ".");
-  $L1_uptime_hour=strtok(".");
-  $rbgcalc=intval(($L1/1023*100)*2.55);
-  $rbgcalcinverse=255-intval(($L1/1023*100)*2.55);
-  echo ("<div class='element'><div class='dat' style='background:rgb($rbgcalc,0,0);background:linear-gradient(to bottom, #FFFFFF, rgb($rbgcalc,0,0));' ");
-  echo (" data-title='Датчик освещенности. Диапазон от 0 до 1023. Свет включен в районе 800, выключен около 200. работает уже $L1_uptime_day дн. и $L1_uptime_hour час.'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
-  echo ("</div><div class='text'>Освещение СП РО");
-  echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-  echo ("</div></div>");
- }
-}
-/*---------------------*/
-function service_hddsize($disk, $limit, $title, $comment)
-{
- /* Опрос свободного места на диске --------------*/
- $checkdisk=file_get_contents($disk);
- if ($checkdisk > $limit)
-  {
-   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
-  } else
-  {
-   echo ("<div class='element'><div class='dat' style='background:#d64760;'");
-  }
- echo (" data-title='$comment'>$checkdisk GB");
- echo ("</div><div class='text'>$title");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
-}
-/*---------------------*/
-function service_trafic($speed, $limit, $title, $comment)
-{
- /*Опрос траффика --*/
- $traf=file_get_contents($speed);
- if ($traf > $limit)
-  {
-   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
-  } else
-  {
-   echo ("<div class='element'><div class='dat' style='background:#d64760;'");
-  }
- echo (" data-title='$comment'>$traf Мбит/с");
- echo ("</div><div class='text'>$title");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
-}
-/*---------------------*/
-/* Квота---------------
-$checkquota=file_get_contents("/mnt/shared/result_clear.txt");
-echo ("<div class='elementlist'><div class='datlist' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
-echo (" data-title='Квота на сервере 10.51.0.203. Суммируются сетевые диски, документы, рабочий стол'><pro>$checkquota</pro>");
-echo ("</div><div class='text'>Квота пользователей РО");
-echo ("</div><div class='note'>Обновлено в " . date("H:i"));
-echo ("</div></div>");
 /* конец блоков--------*/
 echo ("</div>");
 /*---------------------*/
