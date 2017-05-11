@@ -4,6 +4,51 @@
 //функции для проекта dkmon
 
 /*----------------------------------------------*/
+/*проверка есть файл базы*/
+function dbexist($db)
+{
+ echo "step1";
+// $dbtemp=new SQLite3($db);
+ if(!file_exists($db))
+ {
+  $dbtemp=new SQLite3($db);
+  echo "step2";
+  createdb($db);
+  return false;
+ } else { echo "step3"; return true; }
+}
+/*----------------------------------------------*/
+/*создание пустых таблиц*/
+function createdb($db)
+{
+// $dbtemp=new SQLite3($db);
+ if(file_exists($db))
+ {
+  $dbtemp=new SQLite3($db);
+  $dbtemp->exec('DROP TABLE IF EXISTS checkip');
+ }
+ $dbtemp=new SQLite3($db);
+ $dbtemp->exec('CREATE TABLE checkip (id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, name TEXT, tel INTEGER, email INTEGER, alarm INTEGER, active INTEGER)');
+ $dbtemp->exec("INSERT INTO checkip (ip, name, tel, email, alarm, active) VALUES ('127.0.0.1', 'Локальный хост', 0, 0, 0, 1)");
+}
+/*----------------------------------------------*/
+/*выборка из таблицы*/
+function fromtable($db, $table, $columnsearch, $requestsearch, $columnanswer)
+{
+ if (dbexist($db))
+  {
+   echo "db exist<br>";
+   $dbtemp=new SQLite3($db);
+   $res=$dbtemp->query('SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
+   echo 'SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"';
+   $array=array();
+   while($data=$res->fetchArray())
+   { $array[]=$data; }
+   foreach($array as $row)
+   { echo "peeew"; echo $row[$columnanswer]; }
+  } else { echo "no db"; }
+}
+/*----------------------------------------------*/
 function service_temperature()
 {
  /* датчик температуры--*/

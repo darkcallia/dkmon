@@ -1,7 +1,6 @@
 <?php
 //darkcallia
-//2017.02.10
-//Для версии скрипта 7.
+//2017
 
 //подключаем фунции
 include "functions.php";
@@ -495,6 +494,7 @@ foreach ($array1port as $key=>$val) {
   }
 }
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='emailport' value='Email' /><input type='submit' name='phoneport' value='Sms' /><input type='submit' name='portdel' value='Удалить' /></form>";
+fromtable("mysqlitedb.db", "checkip", "ip", "127.0.0.1", "ip");
 ?>
 </table>
 
