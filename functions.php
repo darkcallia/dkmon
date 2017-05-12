@@ -7,15 +7,15 @@
 /*проверка есть файл базы*/
 function dbexist($db)
 {
- echo "step1";
+// echo "step1";
 // $dbtemp=new SQLite3($db);
  if(!file_exists($db))
  {
   $dbtemp=new SQLite3($db);
-  echo "step2";
+//  echo "step2";
   createdb($db);
   return false;
- } else { echo "step3"; return true; }
+ } else { /*echo "step3";*/ return true; }
 }
 /*----------------------------------------------*/
 /*создание пустых таблиц*/
@@ -33,20 +33,32 @@ function createdb($db)
 }
 /*----------------------------------------------*/
 /*выборка из таблицы*/
-function fromtable($db, $table, $columnsearch, $requestsearch, $columnanswer)
+function fromtable($db, $table, $columnsearch, $requestsearch)//, $columnanswer)
 {
  if (dbexist($db))
   {
    echo "db exist<br>";
    $dbtemp=new SQLite3($db);
-   $res=$dbtemp->query('SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
-   echo 'SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"';
+   //$res=$dbtemp->query('SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
+   $res=$dbtemp->query('SELECT * FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
+   //echo 'SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"';
    $array=array();
    while($data=$res->fetchArray())
    { $array[]=$data; }
-   foreach($array as $row)
-   { echo "peeew"; echo $row[$columnanswer]; }
+   //foreach($array as $row)
+   //{ echo $row[$columnanswer];}
+   //echo $array;
+   return $array;
   } else { echo "no db"; }
+}
+/*----------------------------------------------*/
+function inserttest($db)
+{
+ echo "INSERT";
+ $dbtemp=new SQLite3($db);
+ $dbtemp->exec("INSERT INTO checkip (ip, name, tel, email, alarm, active) VALUES ('127.0.0.2', 'Локальный хост 2', 0, 0, 0, 1)");
+ $dbtemp->exec("INSERT INTO checkip (ip, name, tel, email, alarm, active) VALUES ('127.0.0.3', 'Локальный хост 3', 0, 0, 0, 1)");
+ $dbtemp->exec("INSERT INTO checkip (ip, name, tel, email, alarm, active) VALUES ('127.0.0.4', 'Локальный хост 4', 0, 0, 0, 1)");
 }
 /*----------------------------------------------*/
 function service_temperature()

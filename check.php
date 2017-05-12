@@ -7,7 +7,8 @@ include "functions.php";
 
 //чтение массивов
 $f=file_get_contents("checkarray1.txt");
-$array1=unserialize($f);
+$array1=fromtable("mysqlitedb.db", "checkip", "active", "1");
+//$array1=unserialize($f);
 asort($array1);
 $f=file_get_contents("checkarray2.txt");
 $array2=unserialize($f);
@@ -30,11 +31,11 @@ $f=file_get_contents("checkarrayphoneport.txt");
 $arrayphoneport=unserialize($f);
 
 //если пустой файл, то записываем в массив локалхост
-if(filesize("checkarray1.txt") < 7)
+/*if(filesize("checkarray1.txt") < 7)
  {
   $array1=array("127.0.0.1");
   $array2=array("без описания");
- }
+ }*/
 if(filesize("checkarray1port.txt") < 7)
  {
   $array1port=array("127.0.0.1 80");
@@ -439,6 +440,10 @@ echo ("</div>");
 <?php
 echo "<table width=* height=* style=\"border-style:dashed; border-width:1; border-color:blue; vertical-align:middle;\">";
 echo "<form action='' method='post'>";
+foreach ($array1 as $row)
+{
+echo "<tr>$tags<input type='checkbox' name='checks[]' value='' />$row[name]";
+}
 foreach ($array1 as $key=>$val) {
  if (in_array($key,$arrayemail))
   {
@@ -494,7 +499,9 @@ foreach ($array1port as $key=>$val) {
   }
 }
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='emailport' value='Email' /><input type='submit' name='phoneport' value='Sms' /><input type='submit' name='portdel' value='Удалить' /></form>";
-fromtable("mysqlitedb.db", "checkip", "ip", "127.0.0.1", "ip");
+//inserttest("mysqlitedb.db");
+//fromtable("mysqlitedb.db", "checkip", "ip", "127.0.0.3", "ip");
+//fromtable("mysqlitedb.db", "checkip", "active", "1", "ip");
 ?>
 </table>
 
