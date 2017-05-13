@@ -4,12 +4,16 @@
 
 //подключаем фунции
 include "functions.php";
+//файл БД
+$dbfile="mysqlitedb.db";
 
 //чтение массивов
-$f=file_get_contents("checkarray1.txt");
-$array1=fromtable("mysqlitedb.db", "checkip", "active", "1");
+//$f=file_get_contents("checkarray1.txt");
+$arraycheckip=fromtable($dbfile, "checkip", "active", "1");
+asort($arraycheckip);
 //$array1=unserialize($f);
-asort($array1);
+//asort($array1);
+
 $f=file_get_contents("checkarray2.txt");
 $array2=unserialize($f);
 $f=file_get_contents("checkarray3.txt");
@@ -440,9 +444,15 @@ echo ("</div>");
 <?php
 echo "<table width=* height=* style=\"border-style:dashed; border-width:1; border-color:blue; vertical-align:middle;\">";
 echo "<form action='' method='post'>";
-foreach ($array1 as $row)
+foreach ($arraycheckip as $row)//массив таблицы с сервисами для проверки доступа по ip
 {
-echo "<tr>$tags<input type='checkbox' name='checks[]' value='' />$row[name]";
+ if($row[email]) {//значек email
+  $email="$tags<img src=\"img/email.png\" width=\"12\" height=\"8\">"; } else {
+  $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">"; }
+ if($row[tel]) {//значек tel
+  $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
+  $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
+ echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone";
 }
 foreach ($array1 as $key=>$val) {
  if (in_array($key,$arrayemail))

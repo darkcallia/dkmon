@@ -37,7 +37,7 @@ function fromtable($db, $table, $columnsearch, $requestsearch)//, $columnanswer)
 {
  if (dbexist($db))
   {
-   echo "db exist<br>";
+//   echo "db exist<br>";
    $dbtemp=new SQLite3($db);
    //$res=$dbtemp->query('SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
    $res=$dbtemp->query('SELECT * FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
