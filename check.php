@@ -4,6 +4,7 @@
 
 //используемые массивы
 $arraycheckip=array();//содержит таблицу "checkip" опрашиваемых сервисов по ip
+$arraycheckport=array();//содержит таблицу "checkport" опрашиваемых сервисов по порту
 //подключаем фунции
 include "functions.php";
 //файл БД
@@ -12,11 +13,19 @@ $dbfile="mysqlitedb.db";
 //inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'127.0.0.5', 'Локальный хост 5', 0, 0, 0, 1");
 
 //чтение массивов
-//функция для сортировки многомерного массива по полю sort
-function sortarray($a, $b)
+if(!file_exists($dbfile))
+{ createdb($dbfile); }
+//функция для сортировки многомерного массива по полю ip
+function sortarrayip($a, $b)
 {
  if ($a['ip']==$b['ip']) return 0;
  return $a['ip']>$b['ip'] ? 1 : -1;
+}
+//функция для сортировки многомерного массива по полю port
+function sortarrayport($a, $b)
+{
+ if ($a['port']==$b['port']) return 0;
+ return $a['port']>$b['port'] ? 1 : -1;
 }
 //$f=file_get_contents("checkarray1.txt");
 //функция чтения массивов
@@ -26,7 +35,7 @@ function readarrays()
 // asort($GLOBALS["arraycheckip"]);
 // array_multisort($GLOBALS["arraycheckip[ip]"], SORT_ASC, SORT_STRING);
 // array_multisort($GLOBALS["arraycheckip"][][ip], SORT_ASC, SORT_STRING);
- usort($GLOBALS["arraycheckip"], 'sortarray');
+ usort($GLOBALS["arraycheckip"], 'sortarrayip');
 // echo "TEST" . $GLOBALS["arraycheckip"][7][ip] . "<br>";
 /*
  foreach($GLOBALS["arraycheckip"] as $key => $value)
@@ -34,6 +43,8 @@ function readarrays()
   echo "$key = $value[ip] <br />";
  }
 */
+ $GLOBALS["arraycheckport"]=fromtable($GLOBALS["dbfile"], "checkport", "active", "1");
+ usort($GLOBALS["arraycheckport"], 'sortarrayport');
 }
 readarrays();
 //$array1=unserialize($f);
@@ -71,12 +82,12 @@ if(filesize("checkarray1port.txt") < 7)
   $array2port=array("без описания");
  }
 
-//добавление элемента
+//добавление элемента проверки по ip
 if(isset($_POST['insert-ip']))
- {
-  //добавляем в таблицу БД
-  inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'".trim($_POST['iptext'])."', '".trim($_POST['notetext'])."', 0, 0, 0, 1");
-  readarrays();//обновляем массивы
+{
+ //добавляем в таблицу БД
+ inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'".trim($_POST['iptext'])."', '".trim($_POST['notetext'])."', 0, 0, 0, 1");
+ readarrays();//обновляем массивы
 /*
   //добавляем в массив
   array_push($array1, trim($_POST['iptext']));
@@ -91,9 +102,19 @@ if(isset($_POST['insert-ip']))
   fwrite($f, $string_to_file);
   fclose($f);
 */
-  //вывод введенного
-  echo "<b>Добавлено " . trim($_POST['iptext']) . "</b><br>";
- }
+ //вывод введенного
+ echo "<b>Добавлено " . trim($_POST['iptext']) . "</b><br>";
+}
+//добавление элемента проверки по порту
+if(isset($_POST['insert-port']))
+{
+ //добавляем в таблицу БД
+ inserttotable($dbfile, "checkport", "port, name, tel, email, alarm, active", "'".trim($_POST['porttext'])."', '".trim($_POST['portnotetext'])."', 0, 0, 0, 1");
+ readarrays();//обновляем массивы
+ //вывод введенного
+ echo "<b>Добавлено " . trim($_POST['porttext']) . "</b><br>";
+}
+/*
 if(isset($_POST['port']))
  {
   //добавляем в массив
@@ -111,7 +132,7 @@ if(isset($_POST['port']))
   //вывод введенного
   echo "<b>Добавлено " . trim($_POST['porttext']) . "</b><br>";
  }
-
+*/
 //добавление или удаление опроса по email для IP
 if(isset($_POST['edit-ip-email']))
 {
@@ -172,6 +193,25 @@ if(isset($_POST['email']))
   }
  }
 */
+//добавление или удаление опроса по email для портов
+if(isset($_POST['edit-port-email']))
+{
+ $a=$_POST['portchecks'];
+ if(empty($a))
+ { echo("Вы ничего не выбрали."); } else
+ {
+  echo("Вы изменили состояние email у следующих элементов: ");
+  foreach ($a as $emailport)
+  {
+   echo($emailport . " ");
+   //ищем текущее значение и меняем его
+   $arraytemp=fromtable($dbfile, "checkport", "id", "$emailport");
+   updatetable($dbfile, "checkport", "id", "$emailport", "email", !$arraytemp[0][emailport]);
+  }
+  readarrays();//обновляем массивы
+ }
+}
+/*
 //добавление или удаление опроса по email для Port
 if(isset($_POST['emailport']))
  {
@@ -212,7 +252,7 @@ if(isset($_POST['emailport']))
     }
   }
  }
-
+*/
 //добавление или удаление опроса по tel для IP
 if(isset($_POST['edit-ip-tel']))
 {
@@ -273,6 +313,25 @@ if(isset($_POST['phone']))
   }
  }
 */
+//добавление или удаление опроса по tel для портов
+if(isset($_POST['edit-port-tel']))
+{
+ $a=$_POST['portchecks'];
+ if(empty($a))
+ { echo("Вы ничего не выбрали."); } else
+ {
+  echo("Вы изменили состояние tel у следующих элементов: ");
+  foreach ($a as $telport)
+  {
+   echo($telport . " ");
+   //ищем текущее значение и меняем его
+   $arraytemp=fromtable($dbfile, "checkport", "id", "$telport");
+   updatetable($dbfile, "checkport", "id", "$telport", "telport", !$arraytemp[0][telport]);
+  }
+  readarrays();//обновляем массивы
+ }
+}
+/*
 //добавление или удаление опроса по phone для Port
 if(isset($_POST['phoneport']))
  {
@@ -313,8 +372,8 @@ if(isset($_POST['phoneport']))
     }
   }
  }
-
-//удаление элементов
+*/
+//удаление элементов проверки по ip
 if(isset($_POST['del-ip']))
 {
  $a=$_POST['checks'];
@@ -330,6 +389,7 @@ if(isset($_POST['del-ip']))
   readarrays();//обновляем массивы
  }
 }
+/*
 //удаление элементов
 if(isset($_POST['del']))
  {
@@ -395,6 +455,24 @@ if(isset($_POST['del']))
      }
   }
  }
+*/
+//удаление элементов проверки по портам
+if(isset($_POST['del-port']))
+{
+ $a=$_POST['portchecks'];
+ if(empty($a))
+ { echo("Вы ничего не выбрали."); } else
+ {
+  echo("Вы удалили элементы: ");
+  foreach ($a as $valdel)
+  {
+   echo($valdel . " ");
+   deletefromtable($dbfile, "checkport", "id", $valdel);
+  }
+  readarrays();//обновляем массивы
+ }
+}
+/*
 if(isset($_POST['portdel']))
  {
   $a = $_POST['portchecks'];
@@ -459,6 +537,7 @@ if(isset($_POST['portdel']))
      }
   }
  }
+*/
 ?>
 
 <html>
@@ -515,7 +594,7 @@ echo ("</div>");
    <form action="" method="post">
    <input type="text" name="porttext" />
    <input type="text" name="portnotetext" />
-   <input type="submit" name="port" value="Добавить" />
+   <input type="submit" name="insert-port" value="Добавить" />
    </form>
 
  <tr>
@@ -571,6 +650,17 @@ echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; 
 <?php
 echo "<table width=* height=* style=\"border-style:dashed; border-width:1; border-color:blue;\">";
 echo "<form action='' method='post'>";
+foreach ($arraycheckport as $row)//массив таблицы с сервисами для проверки доступа по портам
+{
+ if($row[email]) {//значек email
+  $email="$tags<img src=\"img/email.png\" width=\"12\" height=\"8\">"; } else {
+  $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">"; }
+ if($row[tel]) {//значек tel
+  $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
+  $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
+ echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$row[id]' />$row[port] $row[name] $email $phone";
+}
+/*
 foreach ($array1port as $key=>$val) {
  if (in_array($key,$arrayemailport))
   {
@@ -594,7 +684,8 @@ foreach ($array1port as $key=>$val) {
    echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$key' />$val $array2port[$key] $email $phone";
   }
 }
-echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='emailport' value='Email' /><input type='submit' name='phoneport' value='Sms' /><input type='submit' name='portdel' value='Удалить' /></form>";
+*/
+echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-port-email' value='Email' /><input type='submit' name='edit-port-tel' value='SMS' /><input type='submit' name='del-port' value='Удалить' /></form>";
 //inserttest("mysqlitedb.db");
 //fromtable("mysqlitedb.db", "checkip", "ip", "127.0.0.3", "ip");
 //fromtable("mysqlitedb.db", "checkip", "active", "1", "ip");
