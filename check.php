@@ -72,7 +72,7 @@ if(filesize("checkarray1port.txt") < 7)
  }
 
 //добавление элемента
-if(isset($_POST['ip']))
+if(isset($_POST['insert-ip']))
  {
   //добавляем в таблицу БД
   inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'".trim($_POST['iptext'])."', '".trim($_POST['notetext'])."', 0, 0, 0, 1");
@@ -113,6 +113,25 @@ if(isset($_POST['port']))
  }
 
 //добавление или удаление опроса по email для IP
+if(isset($_POST['edit-ip-email']))
+{
+ $a=$_POST['checks'];
+ if(empty($a))
+ { echo("Вы ничего не выбрали."); } else
+ {
+  echo("Вы изменили состояние email у следующих элементов: ");
+  foreach ($a as $email)
+  {
+   echo($email . " ");
+   //ищем текущее значение и меняем его
+   $arraytemp=fromtable($dbfile, "checkip", "id", "$email");
+//   echo "Q" . !$arraytemp[0][email] . "Q";
+   updatetable($dbfile, "checkip", "id", "$email", "email", !$arraytemp[0][email]);
+  }
+  readarrays();//обновляем массивы
+ }
+}
+/*
 if(isset($_POST['email']))
  {
   $a = $_POST['checks'];
@@ -152,7 +171,7 @@ if(isset($_POST['email']))
     }
   }
  }
-
+*/
 //добавление или удаление опроса по email для Port
 if(isset($_POST['emailport']))
  {
@@ -194,6 +213,25 @@ if(isset($_POST['emailport']))
   }
  }
 
+//добавление или удаление опроса по tel для IP
+if(isset($_POST['edit-ip-tel']))
+{
+ $a=$_POST['checks'];
+ if(empty($a))
+ { echo("Вы ничего не выбрали."); } else
+ {
+  echo("Вы изменили состояние tel у следующих элементов: ");
+  foreach ($a as $tel)
+  {
+   echo($tel . " ");
+   //ищем текущее значение и меняем его
+   $arraytemp=fromtable($dbfile, "checkip", "id", "$tel");
+   updatetable($dbfile, "checkip", "id", "$tel", "tel", !$arraytemp[0][tel]);
+  }
+  readarrays();//обновляем массивы
+ }
+}
+/*
 //добавление или удаление опроса по phone для IP
 if(isset($_POST['phone']))
  {
@@ -234,7 +272,7 @@ if(isset($_POST['phone']))
     }
   }
  }
-
+*/
 //добавление или удаление опроса по phone для Port
 if(isset($_POST['phoneport']))
  {
@@ -276,6 +314,22 @@ if(isset($_POST['phoneport']))
   }
  }
 
+//удаление элементов
+if(isset($_POST['del-ip']))
+{
+ $a=$_POST['checks'];
+ if(empty($a))
+ { echo("Вы ничего не выбрали."); } else
+ {
+  echo("Вы удалили элементы: ");
+  foreach ($a as $valdel)
+  {
+   echo($valdel . " ");
+   deletefromtable($dbfile, "checkip", "id", $valdel);
+  }
+  readarrays();//обновляем массивы
+ }
+}
 //удаление элементов
 if(isset($_POST['del']))
  {
@@ -454,7 +508,7 @@ echo ("</div>");
    <form action="" method="post">
    <input type="text" name="iptext" />
    <input type="text" name="notetext" />
-   <input type="submit" name="ip" value="Добавить" />
+   <input type="submit" name="insert-ip" value="Добавить" />
    </form>
 
   <td align=center style="vertical-align:top;">
@@ -509,7 +563,7 @@ foreach ($array1 as $key=>$val) {
   }
 }
 */
-echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='email' value='Email' /><input type='submit' name='phone' value='Sms' /><input type='submit' name='del' value='Удалить' /></form>";
+echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-ip-email' value='Email' /><input type='submit' name='edit-ip-tel' value='SMS' /><input type='submit' name='del-ip' value='Удалить' /></form>";
 ?>
 </table>
 

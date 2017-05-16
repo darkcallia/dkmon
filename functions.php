@@ -33,14 +33,14 @@ function createdb($db)
 }
 /*----------------------------------------------*/
 /*выборка из таблицы*/
-function fromtable($db, $table, $columnsearch, $requestsearch)//, $columnanswer)
+function fromtable($db, $table, $columnsearch, $valuesearch)//, $columnanswer)
 {
  if (dbexist($db))
   {
 //   echo "db exist<br>";
    $dbtemp=new SQLite3($db);
    //$res=$dbtemp->query('SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
-   $res=$dbtemp->query('SELECT * FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"');
+   $res=$dbtemp->query('SELECT * FROM '.$table.' WHERE '.$columnsearch.'="'.$valuesearch.'"');
    //echo 'SELECT '.$columnanswer.' FROM '.$table.' WHERE '.$columnsearch.'="'.$requestsearch.'"';
    $array=array();
    while($data=$res->fetchArray())
@@ -63,6 +63,30 @@ function inserttotable($db, $table, $columns, $values)
  }
 }
 /*----------------------------------------------*/
+/*изменение таблицы*/
+function updatetable($db, $table, $columnsearch, $valuesearch, $columnupdate, $valueupdate)
+{
+ if (dbexist($db))
+ {
+  $dbtemp=new SQLite3($db);
+  $update=$dbtemp->query('UPDATE '.$table.' SET '.$columnupdate.'="'.$valueupdate.'" WHERE '.$columnsearch.'="'.$valuesearch.'"');
+//   echo 'UPDATE '.$table.' SET '.$columnupdate.'="'.$valueupdate.'" WHERE '.$columnsearch.'="'.$valuesearch.'"';
+ }
+}
+/*----------------------------------------------*/
+/*удаление записи таблицы*/
+function deletefromtable($db, $table, $columnsearch, $valuesearch)
+{
+ if (dbexist($db))
+ {
+  $dbtemp=new SQLite3($db);
+  $delete=$dbtemp->query('DELETE FROM '.$table.' WHERE '.$columnsearch.'="'.$valuesearch.'"');
+//   echo 'UPDATE '.$table.' SET '.$columnupdate.'="'.$valueupdate.'" WHERE '.$columnsearch.'="'.$valuesearch.'"';
+//  echo 'DELETE FROM '.$table.' WHERE '.$columnsearch.'="'.$valuesearch.'"';
+ }
+}
+/*----------------------------------------------*/
+//тестовое наполнение таблицы
 function inserttest($db)
 {
  echo "INSERT";
