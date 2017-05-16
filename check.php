@@ -2,15 +2,40 @@
 //darkcallia
 //2017
 
+//используемые массивы
+$arraycheckip=array();//содержит таблицу "checkip" опрашиваемых сервисов по ip
 //подключаем фунции
 include "functions.php";
 //файл БД
 $dbfile="mysqlitedb.db";
 
+//inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'127.0.0.5', 'Локальный хост 5', 0, 0, 0, 1");
+
 //чтение массивов
+//функция для сортировки многомерного массива по полю sort
+function sortarray($a, $b)
+{
+ if ($a['ip']==$b['ip']) return 0;
+ return $a['ip']>$b['ip'] ? 1 : -1;
+}
 //$f=file_get_contents("checkarray1.txt");
-$arraycheckip=fromtable($dbfile, "checkip", "active", "1");
-asort($arraycheckip);
+//функция чтения массивов
+function readarrays()
+{
+ $GLOBALS["arraycheckip"]=fromtable($GLOBALS["dbfile"], "checkip", "active", "1");
+// asort($GLOBALS["arraycheckip"]);
+// array_multisort($GLOBALS["arraycheckip[ip]"], SORT_ASC, SORT_STRING);
+// array_multisort($GLOBALS["arraycheckip"][][ip], SORT_ASC, SORT_STRING);
+ usort($GLOBALS["arraycheckip"], 'sortarray');
+// echo "TEST" . $GLOBALS["arraycheckip"][7][ip] . "<br>";
+/*
+ foreach($GLOBALS["arraycheckip"] as $key => $value)
+ {
+  echo "$key = $value[ip] <br />";
+ }
+*/
+}
+readarrays();
 //$array1=unserialize($f);
 //asort($array1);
 
@@ -49,6 +74,10 @@ if(filesize("checkarray1port.txt") < 7)
 //добавление элемента
 if(isset($_POST['ip']))
  {
+  //добавляем в таблицу БД
+  inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'".trim($_POST['iptext'])."', '".trim($_POST['notetext'])."', 0, 0, 0, 1");
+  readarrays();//обновляем массивы
+/*
   //добавляем в массив
   array_push($array1, trim($_POST['iptext']));
   array_push($array2, trim($_POST['notetext']));
@@ -61,6 +90,7 @@ if(isset($_POST['ip']))
   $f = fopen("checkarray2.txt", 'w');
   fwrite($f, $string_to_file);
   fclose($f);
+*/
   //вывод введенного
   echo "<b>Добавлено " . trim($_POST['iptext']) . "</b><br>";
  }
@@ -454,6 +484,7 @@ foreach ($arraycheckip as $row)//массив таблицы с сервисам
   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
  echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone";
 }
+/*
 foreach ($array1 as $key=>$val) {
  if (in_array($key,$arrayemail))
   {
@@ -477,6 +508,7 @@ foreach ($array1 as $key=>$val) {
    echo "<tr>$tags<input type='checkbox' name='checks[]' value='$key' />$val $array2[$key] $email $phone";
   }
 }
+*/
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='email' value='Email' /><input type='submit' name='phone' value='Sms' /><input type='submit' name='del' value='Удалить' /></form>";
 ?>
 </table>

@@ -52,6 +52,17 @@ function fromtable($db, $table, $columnsearch, $requestsearch)//, $columnanswer)
   } else { echo "no db"; }
 }
 /*----------------------------------------------*/
+/*вставка в таблицу*/
+function inserttotable($db, $table, $columns, $values)
+{
+ if (dbexist($db))
+ {
+  $dbtemp=new SQLite3($db);
+  $dbtemp->exec("INSERT INTO ".$table." (".$columns.") VALUES (".$values.")");
+//  echo "INSERT INTO ".$table." (".$columns.") VALUES (".$values.")";
+ }
+}
+/*----------------------------------------------*/
 function inserttest($db)
 {
  echo "INSERT";
