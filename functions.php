@@ -187,35 +187,41 @@ function service_light()
 function service_hddsize($disk, $limit, $title, $comment)
 {
  /* Опрос свободного места на диске --------------*/
- $checkdisk=file_get_contents($disk);
- if ($checkdisk > $limit)
+ if ( file_exists("$disk") )
   {
-   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
-  } else
-  {
-   echo ("<div class='element'><div class='dat' style='background:#d64760;'");
+   $checkdisk=file_get_contents($disk);
+   if ($checkdisk > $limit)
+    {
+     echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
+    } else
+    {
+     echo ("<div class='element'><div class='dat' style='background:#d64760;'");
+    }
+   echo (" data-title='$comment'>$checkdisk GB");
+   echo ("</div><div class='text'>$title");
+   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+   echo ("</div></div>");
   }
- echo (" data-title='$comment'>$checkdisk GB");
- echo ("</div><div class='text'>$title");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
 }
 /*---------------------*/
 function service_trafic($speed, $limit, $title, $comment)
 {
  /*Опрос траффика --*/
- $traf=file_get_contents($speed);
- if ($traf > $limit)
+ if ( file_exists("$speed") )
   {
-   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
-  } else
-  {
-   echo ("<div class='element'><div class='dat' style='background:#d64760;'");
+   $traf=file_get_contents($speed);
+   if ($traf > $limit)
+    {
+     echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'");
+    } else
+    {
+     echo ("<div class='element'><div class='dat' style='background:#d64760;'");
+    }
+   echo (" data-title='$comment'>$traf Мбит/с");
+   echo ("</div><div class='text'>$title");
+   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+   echo ("</div></div>");
   }
- echo (" data-title='$comment'>$traf Мбит/с");
- echo ("</div><div class='text'>$title");
- echo ("</div><div class='note'>Обновлено в " . date("H:i"));
- echo ("</div></div>");
 }
 /*---------------------*/
 /* Квота---------------
