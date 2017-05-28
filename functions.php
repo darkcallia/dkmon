@@ -123,25 +123,25 @@ function service_temperature($source, $limit, $title, $comment)
  }
 }
 /*---------------------*/
-function service_motiontime()
+function service_motiontime($source, $title)
 {
  /* Движение в СП2-------*/
- if ( file_exists("http://10.51.0.222/motionlog/checkmotion_clear.txt") )
+ if ( file_exists("$source") )
  {
-  $checkmotion=file_get_contents("http://10.51.0.222/motionlog/checkmotion_clear.txt");
+  $checkmotion=file_get_contents("$source");
   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'><font color=brown>$checkmotion</font>");
-  echo ("</div><div class='text'>Посещение СП РО");
+  echo ("</div><div class='text'>$title");
   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
   echo ("</div></div>");
  }
 }
 /*----------------------*/
-function service_motionactive()
+function service_motionactive($source, $title, $comment)
 {
  /* датчик движения -----------*/
- if ( file_exists("http://10.51.0.251/") )
+ if ( file_exists("$source") )
  {
-  $motion=file_get_contents("http://10.51.0.251/");
+  $motion=file_get_contents("$source");
   $M1=substr($motion, strpos($motion, "<M1>")+4, strpos($motion, "</M1>")-(strpos($motion, "<M1>")+4));
   $M1_1=strtok($M1, ".");
   $M1_2=strtok(".");
@@ -157,19 +157,19 @@ function service_motionactive()
     echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
     $M1="Движение! #$M1_2";
    }
-  echo (" data-title='Датчик Движения. Цифра от #1 до #600 означает длительность нахождения. Работает уже $M1_uptime_day дн. и $M1_uptime_hour час.'>$M1");
-  echo ("</div><div class='text'>Движение СП РО");
+  echo (" data-title='$comment'>$M1");
+  echo ("</div><div class='text'>$title");
   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
   echo ("</div></div>");
  }
 }
 /*---------------------*/
-function service_light()
+function service_light($source, $title, $comment)
 {
  /* датчик света -----------*/
- if ( file_exists("http://10.51.0.251/") )
+ if ( file_exists("$source") )
  {
-  $light=file_get_contents("http://10.51.0.251/");
+  $light=file_get_contents("$source");
   $L1=substr($light, strpos($light, "<L1>")+4, strpos($light, "</L1>")-(strpos($light, "<L1>")+4));
   $L1_uptime=substr($light, strpos($light, "<L1-uptime>")+11, strpos($light, "</L1-uptime>")-(strpos($light, "<L1-uptime>")+11));
   $L1_uptime_day=strtok($L1_uptime, ".");
@@ -177,8 +177,8 @@ function service_light()
   $rbgcalc=intval(($L1/1023*100)*2.55);
   $rbgcalcinverse=255-intval(($L1/1023*100)*2.55);
   echo ("<div class='element'><div class='dat' style='background:rgb($rbgcalc,0,0);background:linear-gradient(to bottom, #FFFFFF, rgb($rbgcalc,0,0));' ");
-  echo (" data-title='Датчик освещенности. Диапазон от 0 до 1023. Свет включен в районе 800, выключен около 200. работает уже $L1_uptime_day дн. и $L1_uptime_hour час.'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
-  echo ("</div><div class='text'>Освещение СП РО");
+  echo (" data-title='$comment'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
+  echo ("</div><div class='text'>$title");
   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
   echo ("</div></div>");
  }

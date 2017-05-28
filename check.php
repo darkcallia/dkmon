@@ -560,9 +560,9 @@ echo ("<div class='block'>");
 /*----------------------------------------------*/
 /* перечисляем функции опроса датчиков, сервисов*/
 service_temperature("data/temperaturet2.txt", 21, "Температура СП РО", "Датчик температуры в СП РО.");
-service_motiontime();
-service_motionactive();
-service_light();
+service_motiontime("data/checkmotion_clear.txt", "Посещение СП РО");
+service_motionactive("http://10.51.0.251/", "Движение СП РО", "Датчик Движения. Цифра от #1 до #600 означает длительность нахождения. Работает уже $M1_uptime_day дн. и $M1_uptime_hour час.");
+service_light("http://10.51.0.251/", "Освещение СП РО", "Датчик освещенности. Диапазон от 0 до 1023. Свет включен в районе 800, выключен около 200. работает уже $L1_uptime_day дн. и $L1_uptime_hour час.");
 service_hddsize("data/ro-0.35-disk1.txt", 30, "Диск H БД РО", "База данных РО. Место на диске H (папка с базой)");
 service_hddsize("data/ro-0.35-disk2.txt", 30, "Диск M БД РО", "База данных РО. Место на диске M (архивы баз)");
 service_hddsize("data/f1-1.35-disk1.txt", 30, "Диск C БД Ф1", "База данных Филиала 1. Место на диске C (папка с базой и архивы)");
