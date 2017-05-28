@@ -99,25 +99,25 @@ function inserttest($db)
  $dbtemp->exec("INSERT INTO checkip (ip, name, tel, email, alarm, active) VALUES ('127.0.0.4', 'Локальный хост 4', 0, 0, 0, 1)");
 }
 /*----------------------------------------------*/
-function service_temperature()
+function service_temperature($source, $limit, $title, $comment)
 {
  /* датчик температуры--*/
- if ( file_exists("http://10.51.0.251/") )
+ if ( file_exists("$source") )
  {
-  $temperature2=file_get_contents("http://10.51.0.251/");
-  $t2=substr($temperature2, strpos($temperature2, "<T1>")+4, strpos($temperature2, "</T1>")-(strpos($temperature2, "<T1>")+4));
-  $t2_uptime=substr($temperature2, strpos($temperature2, "<T1-uptime>")+11, strpos($temperature2, "</T1-uptime>")-(strpos($temperature2, "<T1-uptime>")+11));
-  $t2_uptime_day=strtok($t2_uptime, ".");
-  $t2_uptime_hour=strtok(".");
-  if ($t2 < 21)
+  $t2=file_get_contents("$source");
+//  $t2=substr($temperature2, strpos($temperature2, "<T1>")+4, strpos($temperature2, "</T1>")-(strpos($temperature2, "<T1>")+4));
+//  $t2_uptime=substr($temperature2, strpos($temperature2, "<T1-uptime>")+11, strpos($temperature2, "</T1-uptime>")-(strpos($temperature2, "<T1-uptime>")+11));
+//  $t2_uptime_day=strtok($t2_uptime, ".");
+//  $t2_uptime_hour=strtok(".");
+  if ($t2 < $limit)
    {
     echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
    } else
    {
     echo ("<div class='element'><div class='dat' style='background:#d64760;' ");
    }
-  echo (" data-title='Датчик температуры работает уже $t2_uptime_day дн. и $t2_uptime_hour час.'>$t2&deg;C");
-  echo ("</div><div class='text'>Температура СП РО");
+  echo (" data-title='$comment'>$t2&deg;C");
+  echo ("</div><div class='text'>$title");
   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
   echo ("</div></div>");
  }

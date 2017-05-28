@@ -559,7 +559,7 @@ if(isset($_POST['portdel']))
 echo ("<div class='block'>");
 /*----------------------------------------------*/
 /* перечисляем функции опроса датчиков, сервисов*/
-service_temperature();
+service_temperature("data/temperaturet2.txt", 21, "Температура СП РО", "Датчик температуры в СП РО.");
 service_motiontime();
 service_motionactive();
 service_light();
