@@ -29,20 +29,29 @@ mailfrom=robot@ro51.fss.ru
 phoneto="+79095603879"
 #путь до скрита php и файлов txt
 phppath=/var/www/html
+#путь до каталога со скриптом
+path=/var/www/dkmon
 
 run_monitoring(){
   # Для каждого хоста из списка, содержащегося в файле данных
   # последовательно выполняем функцию check_host
   #парсим файл со списком
-  phpscript=`php -r '$f=file_get_contents("'$phppath'/checkarray1.txt"); $massiv=unserialize($f); foreach ($massiv as $key=>$j) { echo "$j;$key "; }'`
+#  phpscript=`php -r '$f=file_get_contents("'$phppath'/checkarray1.txt"); $massiv=unserialize($f); foreach ($massiv as $key=>$j) { echo "$j;$key "; }'`
+  phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "active", "1"); foreach ($arraycheckip as $row) { echo "$row[id];$row[ip] "; }'`
+#  phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "active", "1");'`
+#  phpscript=`php -r 'echo "'$path'/functions.php";'`
+#  echo $phpscript
+#  exit
   keylist=$(echo $phpscript)
   #идем по списку
   for i in $keylist ; do
     j=$(echo $i | awk -F ";" '{print $1}')
     p=$(echo $i | awk -F ";" '{print $2}')
     k="ip"
-    check_host $j $p $k
+    #check_host $j $p $k
+    echo $j $p $k
   done
+  exit
 }
 
 run_monitoring_port(){
@@ -240,7 +249,7 @@ $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize(
 }
 
 run_monitoring
-
+exit
 #не выполняем скрипт мониторинга портов в определенные часы
 hour_now=$(date +%H)
 if [[ ($hour_now == "00") || ($hour_now == "01") || ($hour_now == "02") || ($hour_now == "03") || ($hour_now == "04") || ($hour_now == "05") || ($hour_now == "06") || ($hour_now == "06") || ($hour_now == "07") || ($hour_now == "08") ]]

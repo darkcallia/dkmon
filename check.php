@@ -2,13 +2,13 @@
 //darkcallia
 //2017
 
-//используемые массивы
-$arraycheckip=array();//содержит таблицу "checkip" опрашиваемых сервисов по ip
-$arraycheckport=array();//содержит таблицу "checkport" опрашиваемых сервисов по порту
+//используемые массивы ОПРЕДЕЛЕНЫ В functions.php
+//$arraycheckip=array();//содержит таблицу "checkip" опрашиваемых сервисов по ip
+//$arraycheckport=array();//содержит таблицу "checkport" опрашиваемых сервисов по порту
 //подключаем фунции
 include "functions.php";
-//файл БД
-$dbfile="mysqlitedb.db";
+//файл БД ОПРЕДЕЛЕН В functions.php
+//$dbfile="mysqlitedb.db";
 
 //inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'127.0.0.5', 'Локальный хост 5', 0, 0, 0, 1");
 
