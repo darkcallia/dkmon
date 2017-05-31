@@ -49,7 +49,7 @@ run_monitoring(){
     p=$(echo $i | awk -F ";" '{print $2}')
     k="ip"
     #check_host $j $p $k
-    echo $j $p $k
+    echo $j $p $k	
   done
   exit
 }
@@ -71,15 +71,15 @@ run_monitoring_port(){
 }
 
 check_host(){
-  repeat="0"
+  alarm="0"
   if [ $3 == "ip" ]
   #проверяем по IP
   then
-   RESULT=`ping -s 0 -c 2 $1 | grep ttl`
+   RESULT=`ping -s 0 -c 2 $2 | grep ttl`
    #перепроверяем пинг при недоступности :)
    if [ "$RESULT" == "" ]
    then
-    RESULT=`ping -s 0 -c 20 $1 | grep ttl`
+    RESULT=`ping -s 0 -c 20 $2 | grep ttl`
    fi
 
    #если попадается ранее недоступный хост ставший доступен то удаляем из списка
@@ -90,7 +90,8 @@ check_host(){
 #    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
 #$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
 #if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-#    repeat=$(echo $phpscript)
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[alarm]"; }'`
+	alarm=$(echo $phpscript)
 #    #удаляем из списка недоступных IP
 #    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
 #$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
@@ -99,7 +100,7 @@ check_host(){
 #    list=$(echo $phpscript)
 
     #удаляем из списка недоступных IP
-    phpscript=`php -r 'updatetable("'$path'/$dbfile", "checkip", "id", "'$2'", "active", "1");'`
+    phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkip", "id", "'$1'", "alarm", "0");'`
     list=$(echo $phpscript)
 
    fi
@@ -109,38 +110,46 @@ check_host(){
    then
     RESULT="isup"
 
-#    #проверяем сначала был ли в списке недоступных этот порт
-#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-#if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-#    repeat=$(echo $phpscript)
-#    #если попадается ранее недоступный порт ставший доступен то удаляем из списка
-#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-#if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
-#{ unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
-#    list=$(echo $phpscript)
+    #проверяем сначала был ли в списке недоступных этот порт
+    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    repeat=$(echo $phpscript)
+    #если попадается ранее недоступный порт ставший доступен то удаляем из списка
+    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
+{ unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
+    list=$(echo $phpscript)
 
    else
     RESULT=""
    fi
   fi
   #Проверяем если сервис в списке был в недоступных и стал доступен, то высылаем оповещение что сервис стал доступен
-  if [ $repeat == "1" ]
+  if [ $alarm == "1" ]
   then
    #проверяем стоит ли галочка, что нужно оповещать
    warningEmailOn="0"
    warningPhoneOn="0"
+   #проверка по ip
    if [ $3 == "ip" ]
    then
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemail.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayemail.txt"); $arrayemail=unserialize($f); \
-if (in_array('$2',$arrayemail)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    warningEmailOn=$(echo $phpscript)
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphone.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayphone.txt"); $arrayphone=unserialize($f); \
-if (in_array('$2',$arrayphone)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemail.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayemail.txt"); $arrayemail=unserialize($f); \
+#if (in_array('$2',$arrayemail)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[email]"; }'`
+	warningEmailOn=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphone.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayphone.txt"); $arrayphone=unserialize($f); \
+#if (in_array('$2',$arrayphone)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[tel]"; }'`
+#	temp_id=$(echo $phpscript | awk -F ";" '{print $1}')
+#	temp_tel=$(echo $phpscript | awk -F ";" '{print $2}')
+#	echo "ID="$temp_id
+# 	echo "TEL="$temp_tel
     warningPhoneOn=$(echo $phpscript)
+   #проверка по портам	
    else
     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
 $f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
@@ -151,10 +160,12 @@ $f=file_get_contents("'$phppath'/checkarrayphoneport.txt"); $arrayphoneport=unse
 if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
     warningPhoneOn=$(echo $phpscript)
    fi
+   #стоит галочка что нужно оповещать по email
    if [ $warningEmailOn == "1" ]
    then
     #А здесь будут выполнены действия по извещению о доступности хоста
-    MESSAGE="$1 $2"
+    #$1 - id в таблице, $2 - ip адрес
+	MESSAGE="$1 $2"
     echo "$MESSAGE"
     echo "To: $mailto" > file1
     echo "Subject: Внимание! Сервис вновь доступен." >> file1
@@ -165,9 +176,11 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
     /usr/sbin/ssmtp $mailto < file1
     rm file1
    fi
+   #стоит галочка что нужно оповещать по СМС
    if [ $warningPhoneOn == "1" ]
    then
     #А здесь будут выполнены действия по извещению о доступности хоста
+	#$1 - id в таблице, $2 - ip адрес
     MESSAGE="$1 $2"
     /usr/bin/python /scripts/sendsms/sendsms.py $phoneto "$MESSAGE start" > /dev/null
 #    echo START
@@ -177,37 +190,41 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
   #если попадается недоступный хост
   if [ "$RESULT" == "" ]
   then
-   repeat="0"
+   alarm="0"
    if [ $3 == "ip" ]
    then
     #проверяем сначала был ли в списке недоступных этот ip
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
-if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    repeat=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
+#if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[alarm]"; }'`
+	alarm=$(echo $phpscript)
    else
     #проверяем сначала был ли в списке недоступных этот порт
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
 $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
 if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    repeat=$(echo $phpscript)
+    alarm=$(echo $phpscript)
    fi
    #Проверяем если сервис в списке был в недоступных, то НЕ высылаем оповещение что сервис недоступен
-   if [ $repeat == "0" ]
+   #0 - был ранее доступен
+   if [ $alarm == "0" ]
    then
     #проверяем стоит ли галочка, что нужно оповещать
     warningEmailOn="0"
     warningPhoneOn="0"
     if [ $3 == "ip" ]
     then
-     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemail.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayemail.txt"); $arrayemail=unserialize($f); \
-if (in_array('$2',$arrayemail)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+#     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemail.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayemail.txt"); $arrayemail=unserialize($f); \
+#if (in_array('$2',$arrayemail)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+	 phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[email]"; }'`
      warningEmailOn=$(echo $phpscript)
-     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphone.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayphone.txt"); $arrayphone=unserialize($f); \
-if (in_array('$2',$arrayphone)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-     warningPhoneOn=$(echo $phpscript)
+#     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphone.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayphone.txt"); $arrayphone=unserialize($f); \
+#if (in_array('$2',$arrayphone)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+     phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[tel]"; }'`
+	 warningPhoneOn=$(echo $phpscript)
     else
      phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
 $f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
@@ -221,6 +238,7 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
     if [ $warningEmailOn == "1" ]
     then
      # А здесь будут выполнены действия по извещению о недоступности хоста
+	 #$1 - id в таблице, $2 - ip адрес
      MESSAGE="$1 $2"
      echo "$MESSAGE"
      echo "To: $mailto" > file1
@@ -240,13 +258,14 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
  #    echo STOP
     fi
    fi
-   #меняем массив с описанием добавляя ставших недоступными
+   #меняем таблицу, добавляя ставших недоступными
    if [ $3 == "ip" ]
    then
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") < 7) { $array3=array('$2'); } else { \
-$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); if (!in_array('$2',$array3)) \
-{ array_push($array3, '$2'); } } $s=serialize($array3); $f=fopen("'$phppath'/checkarray3.txt", "w"); fwrite($f, $s); fclose($f);'`
-    list=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") < 7) { $array3=array('$2'); } else { \
+#$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); if (!in_array('$2',$array3)) \
+#{ array_push($array3, '$2'); } } $s=serialize($array3); $f=fopen("'$phppath'/checkarray3.txt", "w"); fwrite($f, $s); fclose($f);'`
+#    list=$(echo $phpscript)
+    phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkip", "id", "'$1'", "alarm", "1");'`
    else
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") < 7) { $array3port=array('$3'); } else { \
 $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); if (!in_array('$3',$array3port)) \
