@@ -85,34 +85,42 @@ check_host(){
    #если попадается ранее недоступный хост ставший доступен то удаляем из списка
    if [ "$RESULT" != "" ]
    then
+
     #проверяем сначала был ли в списке недоступных этот ip
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
-if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    repeat=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
+#if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+#    repeat=$(echo $phpscript)
+#    #удаляем из списка недоступных IP
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
+#if (in_array('$2',$array3)) { foreach ($array3 as $keya3=>$a3) { if ($array3[$keya3] == '$2') \
+#{ unset($array3[$keya3]); $s=serialize($array3); $f=fopen("'$phppath'/checkarray3.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
+#    list=$(echo $phpscript)
+
     #удаляем из списка недоступных IP
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
-if (in_array('$2',$array3)) { foreach ($array3 as $keya3=>$a3) { if ($array3[$keya3] == '$2') \
-{ unset($array3[$keya3]); $s=serialize($array3); $f=fopen("'$phppath'/checkarray3.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
+    phpscript=`php -r 'updatetable("'$path'/$dbfile", "checkip", "id", "'$2'", "active", "1");'`
     list=$(echo $phpscript)
+
    fi
   #проверяем по портам
   else
    if nc -z $1 $2
    then
     RESULT="isup"
-    #проверяем сначала был ли в списке недоступных этот порт
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    repeat=$(echo $phpscript)
-    #если попадается ранее недоступный порт ставший доступен то удаляем из списка
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
-{ unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
-    list=$(echo $phpscript)
+
+#    #проверяем сначала был ли в списке недоступных этот порт
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+#if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+#    repeat=$(echo $phpscript)
+#    #если попадается ранее недоступный порт ставший доступен то удаляем из списка
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+#if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
+#{ unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
+#    list=$(echo $phpscript)
+
    else
     RESULT=""
    fi
