@@ -33,23 +33,22 @@ phppath=/var/www/html
 path=/var/www/dkmon
 
 run_monitoring(){
-  # Для каждого хоста из списка, содержащегося в файле данных
-  # последовательно выполняем функцию check_host
-  #парсим файл со списком
+  #Для каждого хоста из списка, содержащегося в БД
+  #последовательно выполняем функцию check_host  
 #  phpscript=`php -r '$f=file_get_contents("'$phppath'/checkarray1.txt"); $massiv=unserialize($f); foreach ($massiv as $key=>$j) { echo "$j;$key "; }'`
   phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "active", "1"); foreach ($arraycheckip as $row) { echo "$row[id];$row[ip] "; }'`
 #  phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "active", "1");'`
 #  phpscript=`php -r 'echo "'$path'/functions.php";'`
 #  echo $phpscript
 #  exit
-  keylist=$(echo $phpscript)
+  request_result=$(echo $phpscript)
   #идем по списку
-  for i in $keylist ; do
+  for i in $request_result ; do
     j=$(echo $i | awk -F ";" '{print $1}')
     p=$(echo $i | awk -F ";" '{print $2}')
     k="ip"
     #check_host $j $p $k
-    echo $j $p $k	
+    echo $j $p $k
   done
   exit
 }
@@ -75,6 +74,7 @@ check_host(){
   if [ $3 == "ip" ]
   #проверяем по IP
   then
+   echo "step ping $2"
    RESULT=`ping -s 0 -c 2 $2 | grep ttl`
    #перепроверяем пинг при недоступности :)
    if [ "$RESULT" == "" ]
@@ -92,6 +92,7 @@ check_host(){
 #if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
     phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[alarm]"; }'`
 	alarm=$(echo $phpscript)
+	echo "step - IP доступен и в db колонка ALARM = $alarm"
 #    #удаляем из списка недоступных IP
 #    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
 #$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
@@ -99,9 +100,9 @@ check_host(){
 #{ unset($array3[$keya3]); $s=serialize($array3); $f=fopen("'$phppath'/checkarray3.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
 #    list=$(echo $phpscript)
 
-    #удаляем из списка недоступных IP
+    #Сбрасываем значение тревоги-недоступности сервиса по IP
     phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkip", "id", "'$1'", "alarm", "0");'`
-    list=$(echo $phpscript)
+    run_phpscript=$(echo $phpscript)
 
    fi
   #проверяем по портам
@@ -114,19 +115,19 @@ check_host(){
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
 $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
 if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    repeat=$(echo $phpscript)
+    alarm=$(echo $phpscript)
     #если попадается ранее недоступный порт ставший доступен то удаляем из списка
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
 $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
 if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
 { unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
-    list=$(echo $phpscript)
+    run_phpscript=$(echo $phpscript)
 
    else
     RESULT=""
    fi
   fi
-  #Проверяем если сервис в списке был в недоступных и стал доступен, то высылаем оповещение что сервис стал доступен
+  #Теперь проверяем если сервис был ранее в недоступных и стал доступен, то высылаем оповещение что сервис стал доступен
   if [ $alarm == "1" ]
   then
    #проверяем стоит ли галочка, что нужно оповещать
@@ -199,6 +200,7 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
 #if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
     phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[alarm]"; }'`
 	alarm=$(echo $phpscript)
+	echo "step - Сервис IP $2 недоступен и у него был ALARM = $alarm"
    else
     #проверяем сначала был ли в списке недоступных этот порт
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
@@ -266,11 +268,13 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
 #{ array_push($array3, '$2'); } } $s=serialize($array3); $f=fopen("'$phppath'/checkarray3.txt", "w"); fwrite($f, $s); fclose($f);'`
 #    list=$(echo $phpscript)
     phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkip", "id", "'$1'", "alarm", "1");'`
+	run_phpscript=$(echo $phpscript)
+	echo "step - Сервис IP $2 недоступен и меняем в БД значение ALARM"
    else
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") < 7) { $array3port=array('$3'); } else { \
 $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); if (!in_array('$3',$array3port)) \
 { array_push($array3port, '$3'); } } $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f);'`
-    list=$(echo $phpscript)
+    run_phpscript=$(echo $phpscript)
    fi
   fi
 }
