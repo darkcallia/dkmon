@@ -34,7 +34,7 @@ path=/var/www/dkmon
 
 run_monitoring(){
   #Для каждого хоста из списка, содержащегося в БД
-  #последовательно выполняем функцию check_host  
+  #последовательно выполняем функцию check_host
 #  phpscript=`php -r '$f=file_get_contents("'$phppath'/checkarray1.txt"); $massiv=unserialize($f); foreach ($massiv as $key=>$j) { echo "$j;$key "; }'`
   phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "active", "1"); foreach ($arraycheckip as $row) { echo "$row[id];$row[ip] "; }'`
 #  phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "active", "1");'`
@@ -47,8 +47,8 @@ run_monitoring(){
     j=$(echo $i | awk -F ";" '{print $1}')
     p=$(echo $i | awk -F ";" '{print $2}')
     k="ip"
-    #check_host $j $p $k
-    echo $j $p $k
+	echo "test step - Проверяем $j $p $k"
+    check_host $j $p $k
   done
   exit
 }
@@ -74,11 +74,12 @@ check_host(){
   if [ $3 == "ip" ]
   #проверяем по IP
   then
-   echo "step ping $2"
+   echo "test step - Пингуем $2"
    RESULT=`ping -s 0 -c 2 $2 | grep ttl`
    #перепроверяем пинг при недоступности :)
    if [ "$RESULT" == "" ]
    then
+    echo "test step - Первый проход показал недоступность. Пингуем повторно $2"
     RESULT=`ping -s 0 -c 20 $2 | grep ttl`
    fi
 
@@ -92,7 +93,7 @@ check_host(){
 #if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
     phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[alarm]"; }'`
 	alarm=$(echo $phpscript)
-	echo "step - IP доступен и в db колонка ALARM = $alarm"
+	echo "test step - IP $2 доступен и в БД колонка ALARM = $alarm"
 #    #удаляем из списка недоступных IP
 #    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3.txt") > 6) { \
 #$f=file_get_contents("'$phppath'/checkarray3.txt"); $array3=unserialize($f); \
@@ -174,7 +175,8 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
     echo "Content-Type: text/plain; charset=\"utf-8\"" >> file1
     echo "-" >> file1
     echo "Сервис $MESSAGE доступен." >> file1
-    /usr/sbin/ssmtp $mailto < file1
+    #/usr/sbin/ssmtp $mailto < file1
+	cat file1
     rm file1
    fi
    #стоит галочка что нужно оповещать по СМС
@@ -183,8 +185,8 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
     #А здесь будут выполнены действия по извещению о доступности хоста
 	#$1 - id в таблице, $2 - ip адрес
     MESSAGE="$1 $2"
-    /usr/bin/python /scripts/sendsms/sendsms.py $phoneto "$MESSAGE start" > /dev/null
-#    echo START
+    #/usr/bin/python /scripts/sendsms/sendsms.py $phoneto "$MESSAGE start" > /dev/null
+    echo "$phoneto $MESSAGE start"
    fi
   fi
 
@@ -200,7 +202,7 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
 #if (in_array('$2',$array3)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
     phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[alarm]"; }'`
 	alarm=$(echo $phpscript)
-	echo "step - Сервис IP $2 недоступен и у него был ALARM = $alarm"
+	echo "test step - Сервис IP $2 недоступен и у него был ALARM = $alarm"
    else
     #проверяем сначала был ли в списке недоступных этот порт
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
@@ -249,15 +251,16 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
      echo "Content-Type: text/plain; charset=\"utf-8\"" >> file1
      echo "-" >> file1
      echo "Сервис $MESSAGE недоступен!" >> file1
-     /usr/sbin/ssmtp $mailto < file1
+     #/usr/sbin/ssmtp $mailto < file1
+	 cat file1
      rm file1
     fi
     if [ $warningPhoneOn == "1" ]
     then
      #А здесь будут выполнены действия по извещению о недоступности хоста
      MESSAGE="$1 $2"
-     /usr/bin/python /scripts/sendsms/sendsms.py $phoneto "$MESSAGE STOP" > /dev/null
- #    echo STOP
+     #/usr/bin/python /scripts/sendsms/sendsms.py $phoneto "$MESSAGE STOP" > /dev/null
+     echo "$phoneto $MESSAGE STOP"
     fi
    fi
    #меняем таблицу, добавляя ставших недоступными
@@ -269,7 +272,7 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
 #    list=$(echo $phpscript)
     phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkip", "id", "'$1'", "alarm", "1");'`
 	run_phpscript=$(echo $phpscript)
-	echo "step - Сервис IP $2 недоступен и меняем в БД значение ALARM"
+	echo "test step - Сервис IP $2 недоступен и меняем в БД значение ALARM"
    else
     phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") < 7) { $array3port=array('$3'); } else { \
 $f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); if (!in_array('$3',$array3port)) \
