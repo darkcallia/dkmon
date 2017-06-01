@@ -224,11 +224,13 @@ if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo
 #if (in_array('$2',$arrayemail)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
 	 phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[email]"; }'`
      warningEmailOn=$(echo $phpscript)
+	 echo "test step - Предупреждение по EMAIL - $warningEmailOn"
 #     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphone.txt") > 6) { \
 #$f=file_get_contents("'$phppath'/checkarrayphone.txt"); $arrayphone=unserialize($f); \
 #if (in_array('$2',$arrayphone)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
      phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkip", "id", "'$1'"); foreach ($arraycheckip as $row) { echo "$row[tel]"; }'`
 	 warningPhoneOn=$(echo $phpscript)
+	 echo "test step - Предупреждение по TEL - $warningPhoneOn"
     else
      phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
 $f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
