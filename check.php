@@ -615,7 +615,7 @@ foreach ($arraycheckip as $row)//массив таблицы с сервисам
  if($row[tel]) {//значек tel
   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
- echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone";
+ echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone $row[alarm]";
 }
 /*
 foreach ($array1 as $key=>$val) {
