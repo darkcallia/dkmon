@@ -124,6 +124,7 @@ check_host(){
 #if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
     phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[alarm]"; }'`
 	alarm=$(echo $phpscript)
+	if [ $console_log == "1" ]; then echo "test step - PORT $2 $3 доступен и в БД колонка ALARM = $alarm"; fi
     #если попадается ранее недоступный порт ставший доступен то удаляем из списка
 #    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
 #$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
