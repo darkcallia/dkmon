@@ -57,18 +57,21 @@ run_monitoring(){
 }
 
 run_monitoring_port(){
-  # Для каждого хоста из списка, содержащегося в файле данных
-  # последовательно выполняем функцию check_port
-  #парсим файл со списком
-  phpscript=`php -r '$f=file_get_contents("'$phppath'/checkarray1port.txt"); $massiv=unserialize($f); foreach ($massiv as $key=>$j) { echo "$j:$key "; }'`
-  keylist=$(echo $phpscript)
+  #Для каждого хоста из списка, содержащегося в файле данных
+  #последовательно выполняем функцию check_port
+#  phpscript=`php -r '$f=file_get_contents("'$phppath'/checkarray1port.txt"); $massiv=unserialize($f); foreach ($massiv as $key=>$j) { echo "$j:$key "; }'`
+  phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "active", "1"); foreach ($arraycheckport as $row) { echo "$row[id]:$row[port] "; }'`
+#  keylist=$(echo $phpscript)
+  request_result=$(echo $phpscript)
   #идем по списку
-  for i in $keylist ; do
+  for i in $request_result ; do
     j=$(echo $i | awk -F ":" '{print $1}')
     p=$(echo $i | awk -F ":" '{print $2}')
     q=$(echo $i | awk -F ":" '{print $3}')
     k="port"
+	if [ $console_log == "1" ]; then echo "test step - Проверяем $j $p $q $k"; fi
     check_host $j $p $q $k
+	if [ $console_log == "1" ]; then echo "--------------------------"; fi	
   done
 }
 
@@ -111,21 +114,25 @@ check_host(){
    fi
   #проверяем по портам
   else
-   if nc -z $1 $2
+   if nc -z $2 $3
    then
     RESULT="isup"
 
     #проверяем сначала был ли в списке недоступных этот порт
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    alarm=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+#if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[alarm]"; }'`
+	alarm=$(echo $phpscript)
     #если попадается ранее недоступный порт ставший доступен то удаляем из списка
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
-{ unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
-    run_phpscript=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+#if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($array3port[$keya3] == '$3') \
+#{ unset($array3port[$keya3]); $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f); } } } }'`
+    
+	#Сбрасываем значение тревоги-недоступности сервиса по IP
+	phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkport", "id", "'$1'", "alarm", "0");'`
+	run_phpscript=$(echo $phpscript)
 
    else
     RESULT=""
@@ -156,14 +163,16 @@ if (in_array('$3',$array3port)) { foreach ($array3port as $keya3=>$a3) { if ($ar
     warningPhoneOn=$(echo $phpscript)
    #проверка по портам	
    else
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
-if (in_array('$3',$arrayemailport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    warningEmailOn=$(echo $phpscript)
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphoneport.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayphoneport.txt"); $arrayphoneport=unserialize($f); \
-if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
-    warningPhoneOn=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
+#if (in_array('$3',$arrayemailport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[email]"; }'`
+	warningEmailOn=$(echo $phpscript)
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphoneport.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayphoneport.txt"); $arrayphoneport=unserialize($f); \
+#if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+    phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckip=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[tel]"; }'`
+	warningPhoneOn=$(echo $phpscript)
    fi
    #стоит галочка что нужно оповещать по email
    if [ $warningEmailOn == "1" ]
@@ -208,10 +217,12 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
 	if [ $console_log == "1" ]; then echo "test step - Сервис IP $2 недоступен и у него был ALARM = $alarm"; fi
    else
     #проверяем сначала был ли в списке недоступных этот порт
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
-if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); \
+#if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+	phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[alarm]"; }'`
     alarm=$(echo $phpscript)
+	if [ $console_log == "1" ]; then echo "test step - Сервис PORT $2 $3 недоступен и у него был ALARM = $alarm"; fi
    fi
    #Проверяем если сервис в списке был в недоступных, то НЕ высылаем оповещение что сервис недоступен
    #0 - был ранее доступен
@@ -235,14 +246,18 @@ if (in_array('$3',$array3port)) { echo("1"); } else { echo("0"); } } else { echo
 	 warningPhoneOn=$(echo $phpscript)
 	 if [ $console_log == "1" ]; then echo "test step - Предупреждение по TEL - $warningPhoneOn"; fi
     else
-     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
-if (in_array('$3',$arrayemailport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+#     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayemailport.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayemailport.txt"); $arrayemailport=unserialize($f); \
+#if (in_array('$3',$arrayemailport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+	 phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[email]"; }'`
      warningEmailOn=$(echo $phpscript)
-     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphoneport.txt") > 6) { \
-$f=file_get_contents("'$phppath'/checkarrayphoneport.txt"); $arrayphoneport=unserialize($f); \
-if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+	 if [ $console_log == "1" ]; then echo "test step - Предупреждение по EMAIL - $warningEmailOn"; fi
+#     phpscript=`php -r 'if (filesize("'$phppath'/checkarrayphoneport.txt") > 6) { \
+#$f=file_get_contents("'$phppath'/checkarrayphoneport.txt"); $arrayphoneport=unserialize($f); \
+#if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { echo("0"); }'`
+	 phpscript=`php -r 'include "'$path'/functions.php"; $arraycheckport=fromtable("'$path'/$dbfile", "checkport", "id", "'$1'"); foreach ($arraycheckport as $row) { echo "$row[tel]"; }'`
      warningPhoneOn=$(echo $phpscript)
+	 if [ $console_log == "1" ]; then echo "test step - Предупреждение по TEL - $warningPhoneOn"; fi
     fi
     if [ $warningEmailOn == "1" ]
     then
@@ -279,16 +294,17 @@ if (in_array('$3',$arrayphoneport)) { echo("1"); } else { echo("0"); } } else { 
 	run_phpscript=$(echo $phpscript)
 	if [ $console_log == "1" ]; then echo "test step - Сервис IP $2 недоступен и меняем в БД значение ALARM"; fi
    else
-    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") < 7) { $array3port=array('$3'); } else { \
-$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); if (!in_array('$3',$array3port)) \
-{ array_push($array3port, '$3'); } } $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f);'`
+#    phpscript=`php -r 'if (filesize("'$phppath'/checkarray3port.txt") < 7) { $array3port=array('$3'); } else { \
+#$f=file_get_contents("'$phppath'/checkarray3port.txt"); $array3port=unserialize($f); if (!in_array('$3',$array3port)) \
+#{ array_push($array3port, '$3'); } } $s=serialize($array3port); $f=fopen("'$phppath'/checkarray3port.txt", "w"); fwrite($f, $s); fclose($f);'`
+	phpscript=`php -r 'include "'$path'/functions.php"; updatetable("'$path'/$dbfile", "checkport", "id", "'$1'", "alarm", "1");'`
     run_phpscript=$(echo $phpscript)
+	if [ $console_log == "1" ]; then echo "test step - Сервис PORT $2 $3 недоступен и меняем в БД значение ALARM"; fi
    fi
   fi
 }
 
-run_monitoring
-exit
+#run_monitoring
 #не выполняем скрипт мониторинга портов в определенные часы
 hour_now=$(date +%H)
 if [[ ($hour_now == "00") || ($hour_now == "01") || ($hour_now == "02") || ($hour_now == "03") || ($hour_now == "04") || ($hour_now == "05") || ($hour_now == "06") || ($hour_now == "06") || ($hour_now == "07") || ($hour_now == "08") ]]
