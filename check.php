@@ -574,6 +574,7 @@ service_hddsize("data/ro-0.203-disk1.txt", 7, "Файловый РО. Первы
 service_hddsize("data/ro-0.203-disk2.txt", 7, "Файловый РО. Второй диск", "Файловый сервер РО 10.51.0.203. Сетевые диски ЛВС РО. Второй диск.");
 service_trafic("data/ro-to-f1-traf.txt", 20, "Траффик РО -> Ф1", "Траффик от РО до Ф1.");
 service_trafic("data/f1-to-ro-traf.txt", 20, "Траффик Ф1 -> РО", "Траффик от Ф1 до РО.");
+service_light_button("/dev/ttyS1", "Ledon", "Ledoff");
 /*----------------------------------------------*/
 /* конец блоков--------*/
 echo ("</div>");

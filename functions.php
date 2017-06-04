@@ -188,6 +188,34 @@ function service_light($source, $title, $comment)
  }
 }
 /*---------------------*/
+function service_light_button($device, $cmdon, $cmdoff)
+{
+ /* Включалка светодиодов на Arduino -----------*/
+ $cmd=exec("ls $device");
+ if ( $cmd == $device )
+ {
+  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
+  echo (" data-title=''><form action='' method='post'><input type='submit' name='ledon' value='Вкл' /><input type='submit' name='ledoff' value='Выкл' /></form>");
+  echo ("</div><div class='text'>Включить свет");
+  echo ("</div><div class='note'>");
+  echo ("</div></div>");
+  if(isset($_POST['ledon']))
+   {
+    $cmd="stty -F /dev/ttyS1 -echo -onlcr -iexten 9600; echo 'Ledon' > /dev/ttyS1";
+    //$exe=escapeshellcmd($cmd);
+    //echo $exe;
+    exec($cmd);
+   }
+  if(isset($_POST['ledoff']))
+   {
+    $cmd="stty -F /dev/ttyS1 -echo -onlcr -iexten 9600; echo 'Ledoff' > /dev/ttyS1";
+    //$exe=escapeshellcmd($cmd);
+    //echo $exe;
+    exec($cmd);
+   }
+ }
+}
+/*---------------------*/
 function service_hddsize($disk, $limit, $title, $comment)
 {
  /* Опрос свободного места на диске --------------*/
