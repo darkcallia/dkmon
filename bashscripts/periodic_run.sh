@@ -52,6 +52,15 @@ get_traf()
  echo $ro_to_f1_traf";"$f1_to_ro_traf";"`date '+%d-%m-%Y'`";"`date '+%H:%M'` >> $path/data/traf-`date '+%d-%m-%Y'`.log
 }
 #-------------------------------------
+get_temperature()
+{
+ #Получаем температуру с подключенной Arduino
+ PORT="/dev/ttyS1";
+ stty -F $PORT 9600;
+ read -rn 100 data < $PORT;
+ echo $data | awk -F"<t2>" '{ print $2 }' | awk -F"</t2>" '{ print $1 }' > /var/www/dkmon/data/temperaturet2.txt
+}
+#-------------------------------------
 run_monitoring(){
  #Для каждого хоста из списка, содержащегося в БД
  #последовательно выполняем функцию check_host
@@ -261,6 +270,7 @@ check_host(){
 #get_sambafree_space "//10.51.0.203/c$" "fssadmin%rf;#j[j#;tk#pyf" "ro51" 4194304 "ro-0.203-disk1.txt"
 #get_sambafree_space "//10.51.0.203/f$" "fssadmin%rf;#j[j#;tk#pyf" "ro51" 4194304 "ro-0.203-disk2.txt"
 #get_traf
+#get_temperature
 #run_monitoring
 #не выполняем скрипт мониторинга портов в определенные часы
 hour_now=$(date +%H)
