@@ -5,13 +5,9 @@
 //используемые массивы ОПРЕДЕЛЕНЫ В functions.php
 //$arraycheckip=array();//содержит таблицу "checkip" опрашиваемых сервисов по ip
 //$arraycheckport=array();//содержит таблицу "checkport" опрашиваемых сервисов по порту
+//файл БД ОПРЕДЕЛЕН В functions.php
 //подключаем фунции
 include "functions.php";
-//файл БД ОПРЕДЕЛЕН В functions.php
-//$dbfile="mysqlitedb.db";
-
-//inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'127.0.0.5', 'Локальный хост 5', 0, 0, 0, 1");
-
 //чтение массивов
 if(!file_exists($dbfile))
 { createdb($dbfile); }
@@ -27,81 +23,21 @@ function sortarrayport($a, $b)
  if ($a['port']==$b['port']) return 0;
  return $a['port']>$b['port'] ? 1 : -1;
 }
-//$f=file_get_contents("checkarray1.txt");
 //функция чтения массивов
 function readarrays()
 {
  $GLOBALS["arraycheckip"]=fromtable($GLOBALS["dbfile"], "checkip", "active", "1");
-// asort($GLOBALS["arraycheckip"]);
-// array_multisort($GLOBALS["arraycheckip[ip]"], SORT_ASC, SORT_STRING);
-// array_multisort($GLOBALS["arraycheckip"][][ip], SORT_ASC, SORT_STRING);
  usort($GLOBALS["arraycheckip"], 'sortarrayip');
-// echo "TEST" . $GLOBALS["arraycheckip"][7][ip] . "<br>";
-/*
- foreach($GLOBALS["arraycheckip"] as $key => $value)
- {
-  echo "$key = $value[ip] <br />";
- }
-*/
  $GLOBALS["arraycheckport"]=fromtable($GLOBALS["dbfile"], "checkport", "active", "1");
  usort($GLOBALS["arraycheckport"], 'sortarrayport');
 }
 readarrays();
-//$array1=unserialize($f);
-//asort($array1);
-
-$f=file_get_contents("checkarray2.txt");
-$array2=unserialize($f);
-$f=file_get_contents("checkarray3.txt");
-$array3=unserialize($f);
-$f=file_get_contents("checkarrayemail.txt");
-$arrayemail=unserialize($f);
-$f=file_get_contents("checkarrayphone.txt");
-$arrayphone=unserialize($f);
-$f=file_get_contents("checkarray1port.txt");
-$array1port=unserialize($f);
-asort($array1port);
-$f=file_get_contents("checkarray2port.txt");
-$array2port=unserialize($f);
-$f=file_get_contents("checkarray3port.txt");
-$array3port=unserialize($f);
-$f=file_get_contents("checkarrayemailport.txt");
-$arrayemailport=unserialize($f);
-$f=file_get_contents("checkarrayphoneport.txt");
-$arrayphoneport=unserialize($f);
-
-//если пустой файл, то записываем в массив локалхост
-/*if(filesize("checkarray1.txt") < 7)
- {
-  $array1=array("127.0.0.1");
-  $array2=array("без описания");
- }*/
-if(filesize("checkarray1port.txt") < 7)
- {
-  $array1port=array("127.0.0.1 80");
-  $array2port=array("без описания");
- }
-
 //добавление элемента проверки по ip
 if(isset($_POST['insert-ip']))
 {
  //добавляем в таблицу БД
  inserttotable($dbfile, "checkip", "ip, name, tel, email, alarm, active", "'".trim($_POST['iptext'])."', '".trim($_POST['notetext'])."', 0, 0, 0, 1");
  readarrays();//обновляем массивы
-/*
-  //добавляем в массив
-  array_push($array1, trim($_POST['iptext']));
-  array_push($array2, trim($_POST['notetext']));
-  //сохраняем в файл массив
-  $string_to_file = serialize($array1);
-  $f = fopen("checkarray1.txt", 'w');
-  fwrite($f, $string_to_file);
-  fclose($f);
-  $string_to_file = serialize($array2);
-  $f = fopen("checkarray2.txt", 'w');
-  fwrite($f, $string_to_file);
-  fclose($f);
-*/
  //вывод введенного
  echo "<b>Добавлено " . trim($_POST['iptext']) . "</b><br>";
 }
@@ -114,25 +50,6 @@ if(isset($_POST['insert-port']))
  //вывод введенного
  echo "<b>Добавлено " . trim($_POST['porttext']) . "</b><br>";
 }
-/*
-if(isset($_POST['port']))
- {
-  //добавляем в массив
-  array_push($array1port, trim($_POST['porttext']));
-  array_push($array2port, trim($_POST['portnotetext']));
-  //сохраняем в файл массив
-  $string_to_file = serialize($array1port);
-  $f = fopen("checkarray1port.txt", 'w');
-  fwrite($f, $string_to_file);
-  fclose($f);
-  $string_to_file = serialize($array2port);
-  $f = fopen("checkarray2port.txt", 'w');
-  fwrite($f, $string_to_file);
-  fclose($f);
-  //вывод введенного
-  echo "<b>Добавлено " . trim($_POST['porttext']) . "</b><br>";
- }
-*/
 //добавление или удаление опроса по email для IP
 if(isset($_POST['edit-ip-email']))
 {
@@ -146,53 +63,11 @@ if(isset($_POST['edit-ip-email']))
    echo($email . " ");
    //ищем текущее значение и меняем его
    $arraytemp=fromtable($dbfile, "checkip", "id", "$email");
-//   echo "Q" . !$arraytemp[0][email] . "Q";
    updatetable($dbfile, "checkip", "id", "$email", "email", !$arraytemp[0][email]);
   }
   readarrays();//обновляем массивы
  }
 }
-/*
-if(isset($_POST['email']))
- {
-  $a = $_POST['checks'];
-  if(empty($a))
-  {
-    echo("Вы ничего не выбрали.");
-  } else
-  {
-   echo("Вы изменили состояние email у следующих элементов: ");
-   foreach ($a as $email)
-    {
-     echo($email . " ");
-     if (filesize("checkarrayemail.txt") < 7)//если элемент первый
-      {
-       $arrayemail=array($email);
-      } else//если не первый
-      {
-       if (!in_array($email,$arrayemail))//если не было элемента то добавляем
-        {
-         array_push($arrayemail, $email);
-        } else//если был, то удаляем
-        {
-         foreach ($arrayemail as $key=>$k)//перебираем в массиве arrayemail ключи от array1 и находим удаляемый и его соотв.ключ в массиве arrayemail
-          {
-           if ($arrayemail[$key] == $email)
-            {
-             unset($arrayemail[$key]);
-            }
-          }
-        }
-      }
-     //сохраняем в файл изменения
-     $string_to_file = serialize($arrayemail);
-     $f = fopen("checkarrayemail.txt", 'w');
-     fwrite($f, $string_to_file);
-     fclose($f);
-    }
-  }
- }
-*/
 //добавление или удаление опроса по email для портов
 if(isset($_POST['edit-port-email']))
 {
@@ -211,48 +86,6 @@ if(isset($_POST['edit-port-email']))
   readarrays();//обновляем массивы
  }
 }
-/*
-//добавление или удаление опроса по email для Port
-if(isset($_POST['emailport']))
- {
-  $a = $_POST['portchecks'];
-  if(empty($a))
-  {
-    echo("Вы ничего не выбрали.");
-  } else
-  {
-   echo("Вы изменили состояние email у следующих элементов: ");
-   foreach ($a as $emailport)
-    {
-     echo($emailport . " ");
-     if (filesize("checkarrayemailport.txt") < 7)//если элемент первый
-      {
-       $arrayemailport=array($emailport);
-      } else//если не первый
-      {
-       if (!in_array($emailport,$arrayemailport))//если не было элемента то добавляем
-        {
-         array_push($arrayemailport, $emailport);
-        } else//если был, то удаляем
-        {
-         foreach ($arrayemailport as $key=>$k)//перебираем в массиве arrayemailport ключи от array1port и находим удаляемый и его соотв.ключ в массиве arrayemailport
-          {
-           if ($arrayemailport[$key] == $emailport)
-            {
-             unset($arrayemailport[$key]);
-            }
-          }
-        }
-      }
-     //сохраняем в файл изменения
-     $string_to_file = serialize($arrayemailport);
-     $f = fopen("checkarrayemailport.txt", 'w');
-     fwrite($f, $string_to_file);
-     fclose($f);
-    }
-  }
- }
-*/
 //добавление или удаление опроса по tel для IP
 if(isset($_POST['edit-ip-tel']))
 {
@@ -271,48 +104,6 @@ if(isset($_POST['edit-ip-tel']))
   readarrays();//обновляем массивы
  }
 }
-/*
-//добавление или удаление опроса по phone для IP
-if(isset($_POST['phone']))
- {
-  $a = $_POST['checks'];
-  if(empty($a))
-  {
-    echo("Вы ничего не выбрали.");
-  } else
-  {
-   echo("Вы изменили состояние phone у следующих элементов: ");
-   foreach ($a as $phone)
-    {
-     echo($phone . " ");
-     if (filesize("checkarrayphone.txt") < 7)//если элемент первый
-      {
-       $arrayphone=array($phone);
-      } else//если не первый
-      {
-       if (!in_array($phone,$arrayphone))//если не было элемента то добавляем
-        {
-         array_push($arrayphone, $phone);
-        } else//если был, то удаляем
-        {
-         foreach ($arrayphone as $key=>$k)//перебираем в массиве arrayphone ключи от array1 и находим удаляемый и его соотв.ключ в массиве arr$
-          {
-           if ($arrayphone[$key] == $phone)
-            {
-             unset($arrayphone[$key]);
-            }
-          }
-        }
-      }
-     //сохраняем в файл изменения
-     $string_to_file = serialize($arrayphone);
-     $f = fopen("checkarrayphone.txt", 'w');
-     fwrite($f, $string_to_file);
-     fclose($f);
-    }
-  }
- }
-*/
 //добавление или удаление опроса по tel для портов
 if(isset($_POST['edit-port-tel']))
 {
@@ -331,48 +122,6 @@ if(isset($_POST['edit-port-tel']))
   readarrays();//обновляем массивы
  }
 }
-/*
-//добавление или удаление опроса по phone для Port
-if(isset($_POST['phoneport']))
- {
-  $a = $_POST['portchecks'];
-  if(empty($a))
-  {
-    echo("Вы ничего не выбрали.");
-  } else
-  {
-   echo("Вы изменили состояние phone у следующих элементов: ");
-   foreach ($a as $phoneport)
-    {
-     echo($phoneport . " ");
-     if (filesize("checkarrayphoneport.txt") < 7)//если элемент первый
-      {
-       $arrayphoneport=array($phoneport);
-      } else//если не первый
-      {
-       if (!in_array($phoneport,$arrayphoneport))//если не было элемента то добавляем
-        {
-         array_push($arrayphoneport, $phoneport);
-        } else//если был, то удаляем
-        {
-         foreach ($arrayphoneport as $key=>$k)//перебираем в массиве arrayphoneport ключи от array1port и находим удаляемый и его соотв.ключ в$
-          {
-           if ($arrayphoneport[$key] == $phoneport)
-            {
-             unset($arrayphoneport[$key]);
-            }
-          }
-        }
-      }
-     //сохраняем в файл изменения
-     $string_to_file = serialize($arrayphoneport);
-     $f = fopen("checkarrayphoneport.txt", 'w');
-     fwrite($f, $string_to_file);
-     fclose($f);
-    }
-  }
- }
-*/
 //удаление элементов проверки по ip
 if(isset($_POST['del-ip']))
 {
@@ -389,73 +138,6 @@ if(isset($_POST['del-ip']))
   readarrays();//обновляем массивы
  }
 }
-/*
-//удаление элементов
-if(isset($_POST['del']))
- {
-  $a = $_POST['checks'];
-  if(empty($a))
-  {
-    echo("Вы ничего не выбрали.");
-  }
-  else
-  {
-    echo("Вы удалили элементы: ");
-    foreach ($a as $valdel)
-     {
-      echo($valdel . " ");
-      //удаление элемента массива
-      unset($array1[$valdel]);
-      unset($array2[$valdel]);
-      //массив для хранения недоступных узлов тоже чистим от удаляемого элемента
-      foreach ($array3 as $keya3=>$a3)
-       {
-        if ($array3[$keya3] == $valdel)
-         {
-          unset($array3[$keya3]);
-          $string_to_file = serialize($array3);
-          $f = fopen("checkarray3.txt", 'w');
-          fwrite($f, $string_to_file);
-          fclose($f);
-         }
-       }
-      //массив для хранения email узлов тоже чистим от удаляемого элемента
-      foreach ($arrayemail as $keya3=>$a3)
-       {
-        if ($arrayemail[$keya3] == $valdel)
-         {
-          unset($arrayemail[$keya3]);
-          $string_to_file = serialize($arrayemail);
-          $f = fopen("checkarrayemail.txt", 'w');
-          fwrite($f, $string_to_file);
-          fclose($f);
-         }
-       }
-      //массив для хранения phone узлов тоже чистим от удаляемого элемента
-      foreach ($arrayphone as $keya3=>$a3)
-       {
-        if ($arrayphone[$keya3] == $valdel)
-         {
-          unset($arrayphone[$keya3]);
-          $string_to_file = serialize($arrayphone);
-          $f = fopen("checkarrayphone.txt", 'w');
-          fwrite($f, $string_to_file);
-          fclose($f);
-         }
-       }
-      //сохраняем в файл массив
-      $string_to_file = serialize($array1);
-      $f = fopen("checkarray1.txt", 'w');
-      fwrite($f, $string_to_file);
-      fclose($f);
-      $string_to_file = serialize($array2);
-      $f = fopen("checkarray2.txt", 'w');
-      fwrite($f, $string_to_file);
-      fclose($f);
-     }
-  }
- }
-*/
 //удаление элементов проверки по портам
 if(isset($_POST['del-port']))
 {
@@ -472,72 +154,6 @@ if(isset($_POST['del-port']))
   readarrays();//обновляем массивы
  }
 }
-/*
-if(isset($_POST['portdel']))
- {
-  $a = $_POST['portchecks'];
-  if(empty($a))
-  {
-    echo("Вы ничего не выбрали.");
-  }
-  else
-  {
-    echo("Вы удалили элементы: ");
-    foreach ($a as $valdel)
-     {
-      echo($valdel . " ");
-      //удаление элемента массива
-      unset($array1port[$valdel]);
-      unset($array2port[$valdel]);
-      //массив для хранения недоступных узлов тоже чистим от удаляемого элемента
-      foreach ($array3port as $keya3=>$a3)
-       {
-        if ($array3port[$keya3] == $valdel)
-         {
-          unset($array3port[$keya3]);
-          $string_to_file = serialize($array3port);
-          $f = fopen("checkarray3port.txt", 'w');
-          fwrite($f, $string_to_file);
-          fclose($f);
-         }
-       }
-      //массив для хранения email опрашиваемых узлов тоже чистим от удаляемого элемента
-      foreach ($arrayemailport as $keya3=>$a3)
-       {
-        if ($arrayemailport[$keya3] == $valdel)
-         {
-          unset($arrayemailport[$keya3]);
-          $string_to_file = serialize($arrayemailport);
-          $f = fopen("checkarrayemailport.txt", 'w');
-          fwrite($f, $string_to_file);
-          fclose($f);
-         }
-       }
-      //массив для хранения phone опрашиваемых узлов тоже чистим от удаляемого элемента
-      foreach ($arrayphoneport as $keya3=>$a3)
-       {
-        if ($arrayphoneport[$keya3] == $valdel)
-         {
-          unset($arrayphoneport[$keya3]);
-          $string_to_file = serialize($arrayphoneport);
-          $f = fopen("checkarrayphoneport.txt", 'w');
-          fwrite($f, $string_to_file);
-          fclose($f);
-         }
-       }
-      //сохраняем в файл массив
-      $string_to_file = serialize($array1port);
-      $f = fopen("checkarray1port.txt", 'w');
-      fwrite($f, $string_to_file);
-      fclose($f);
-      $string_to_file = serialize($array2port);
-      $f = fopen("checkarray2port.txt", 'w');
-      fwrite($f, $string_to_file);
-      fclose($f);
-     }
-  }
- }
-*/
 ?>
 
 <html>
@@ -687,9 +303,6 @@ foreach ($array1port as $key=>$val) {
 }
 */
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-port-email' value='Email' /><input type='submit' name='edit-port-tel' value='SMS' /><input type='submit' name='del-port' value='Удалить' /></form>";
-//inserttest("mysqlitedb.db");
-//fromtable("mysqlitedb.db", "checkip", "ip", "127.0.0.3", "ip");
-//fromtable("mysqlitedb.db", "checkip", "active", "1", "ip");
 ?>
 </table>
 
