@@ -232,33 +232,10 @@ foreach ($arraycheckip as $row)//массив таблицы с сервисам
  if($row[tel]) {//значек tel
   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
- echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone $row[alarm]";
+ if($row[alarm]) {//предупреждение о недоступности
+  echo "<tr>$tagsred<input type='checkbox' name='checks[]' value='$row[id]' /><b>$row[ip] $row[name] $email $phone НЕДОСТУПЕН</b>"; } else {
+  echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone"; } 
 }
-/*
-foreach ($array1 as $key=>$val) {
- if (in_array($key,$arrayemail))
-  {
-   $email="$tags<img src=\"img/email.png\" width=\"12\" height=\"8\">";
-  } else
-  {
-   $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">";
-  }
- if (in_array($key,$arrayphone))
-  {
-   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">";
-  } else
-  {
-   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">";
-  }
- if (in_array($key,$array3))
-  {
-   echo "<tr>$tagsred<input type='checkbox' name='checks[]' value='$key' /><b>$val $array2[$key] НЕДОСТУПЕН</b><br /> $email $phone";
-  } else
-  {
-   echo "<tr>$tags<input type='checkbox' name='checks[]' value='$key' />$val $array2[$key] $email $phone";
-  }
-}
-*/
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-ip-email' value='Email' /><input type='submit' name='edit-ip-tel' value='SMS' /><input type='submit' name='del-ip' value='Удалить' /></form>";
 ?>
 </table>
@@ -274,34 +251,11 @@ foreach ($arraycheckport as $row)//массив таблицы с сервиса
   $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">"; }
  if($row[tel]) {//значек tel
   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
-  $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
- echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$row[id]' />$row[port] $row[name] $email $phone $row[alarm]";
+  $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; } 
+ if($row[alarm]) {//предупреждение о недоступности
+  echo "<tr>$tagsred<input type='checkbox' name='portchecks[]' value='$row[id]' /><b>$row[port] $row[name] $email $phone НЕДОСТУПЕН</b>"; } else {
+  echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$row[id]' />$row[port] $row[name] $email $phone $row[alarm]"; }
 }
-/*
-foreach ($array1port as $key=>$val) {
- if (in_array($key,$arrayemailport))
-  {
-   $email="$tags<img src=\"img/email.png\" width=\"12\" height=\"8\">";
-  } else
-  {
-   $email="$tags<img src=\"img/noemail.png\" width=\"12\" height=\"8\">";
-  }
- if (in_array($key,$arrayphoneport))
-  {
-   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">";
-  } else
-  {
-   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">";
-  }
- if (in_array($key,$array3port))
-  {
-   echo "<tr>$tagsred<input type='checkbox' name='portchecks[]' value='$key' /><b>$val $array2port[$key] НЕДОСТУПЕН</b><br /> $email $phone";
-  } else
-  {
-   echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$key' />$val $array2port[$key] $email $phone";
-  }
-}
-*/
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-port-email' value='Email' /><input type='submit' name='edit-port-tel' value='SMS' /><input type='submit' name='del-port' value='Удалить' /></form>";
 ?>
 </table>
