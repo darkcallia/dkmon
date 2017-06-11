@@ -63,9 +63,10 @@ get_temperature()
 #-------------------------------------
 get_foto()
 {
- #Получаем фото с камеры
+ #Получаем фото с камеры 
+ rm -f "$path/data/picture.jpg";
  cd $path/data;
- wget -q "http://192.168.1.111/picture.jpg"; 
+ wget -q "http://192.168.1.111/picture.jpg";
 }
 #-------------------------------------
 run_monitoring(){
@@ -167,7 +168,7 @@ check_host(){
    #А здесь будут выполнены действия по извещению о доступности хоста
    #$1 - id в таблице, $2 - ip адрес
    MESSAGE="$1 $2"
-   echo "$MESSAGE"
+#   echo "$MESSAGE"
    echo "To: $mailto" > file1
    echo "Subject: Внимание! Сервис вновь доступен." >> file1
    echo "From: $mailfrom" >> file1
@@ -232,7 +233,7 @@ check_host(){
     # А здесь будут выполнены действия по извещению о недоступности хоста
 	#$1 - id в таблице, $2 - ip адрес
     MESSAGE="$1 $2"
-    echo "$MESSAGE"
+#    echo "$MESSAGE"
     echo "To: $mailto" > file1
     echo "Subject: Внимание! Нет доступности!" >> file1
     echo "From: $mailfrom" >> file1
