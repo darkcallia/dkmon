@@ -234,7 +234,7 @@ foreach ($arraycheckip as $row)//массив таблицы с сервисам
   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; }
  if($row[alarm]) {//предупреждение о недоступности
-  echo "<tr>$tagsred<input type='checkbox' name='checks[]' value='$row[id]' /><b>$row[ip] $row[name] $email $phone НЕДОСТУПЕН</b>"; } else {
+  echo "<tr>$tagsred<input type='checkbox' name='checks[]' value='$row[id]' /><b>$row[ip] $row[name] НЕДОСТУПЕН $email $phone</b>"; } else {
   echo "<tr>$tags<input type='checkbox' name='checks[]' value='$row[id]' />$row[ip] $row[name] $email $phone"; } 
 }
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-ip-email' value='Email' /><input type='submit' name='edit-ip-tel' value='SMS' /><input type='submit' name='del-ip' value='Удалить' /></form>";
@@ -254,8 +254,8 @@ foreach ($arraycheckport as $row)//массив таблицы с сервиса
   $phone="$tags<img src=\"img/phone.png\" width=\"8\" height=\"12\">"; } else {
   $phone="$tags<img src=\"img/nophone.png\" width=\"8\" height=\"12\">"; } 
  if($row[alarm]) {//предупреждение о недоступности
-  echo "<tr>$tagsred<input type='checkbox' name='portchecks[]' value='$row[id]' /><b>$row[port] $row[name] $email $phone НЕДОСТУПЕН</b>"; } else {
-  echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$row[id]' />$row[port] $row[name] $email $phone $row[alarm]"; }
+  echo "<tr>$tagsred<input type='checkbox' name='portchecks[]' value='$row[id]' /><b>$row[port] $row[name] НЕДОСТУПЕН $email $phone</b>"; } else {
+  echo "<tr>$tags<input type='checkbox' name='portchecks[]' value='$row[id]' />$row[port] $row[name] $email $phone"; }
 }
 echo "<tr><td align=center style=\"border-top-style:dashed; border-top-width:1; border-top-color:gray; font-family:Tahoma; font-weight:normal; font-size:12\"><input type='submit' name='edit-port-email' value='Email' /><input type='submit' name='edit-port-tel' value='SMS' /><input type='submit' name='del-port' value='Удалить' /></form>";
 ?>
