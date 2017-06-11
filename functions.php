@@ -36,7 +36,7 @@ function createdb($db)
  $dbtemp->exec('CREATE TABLE checkip (id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, name TEXT, tel INTEGER, email INTEGER, alarm INTEGER, active INTEGER)');
  $dbtemp->exec("INSERT INTO checkip (ip, name, tel, email, alarm, active) VALUES ('127.0.0.1', 'Локальный хост', 0, 0, 0, 1)");
  $dbtemp->exec('CREATE TABLE checkport (id INTEGER PRIMARY KEY AUTOINCREMENT, port TEXT, name TEXT, tel INTEGER, email INTEGER, alarm INTEGER, active INTEGER)');
- $dbtemp->exec("INSERT INTO checkport (port, name, tel, email, alarm, active) VALUES ('127.0.0.1 80', 'Локальный хост', 0, 0, 0, 1)");
+ $dbtemp->exec("INSERT INTO checkport (port, name, tel, email, alarm, active) VALUES ('127.0.0.1:80', 'Локальный хост', 0, 0, 0, 1)");
 }
 /*----------------------------------------------*/
 /*выборка из таблицы*/
@@ -184,6 +184,19 @@ function service_light($source, $title, $comment)
   echo (" data-title='$comment'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
   echo ("</div><div class='text'>$title");
   echo ("</div><div class='note'>Обновлено в " . date("H:i"));
+  echo ("</div></div>");
+ }
+}
+/*---------------------*/
+function service_foto($source, $title, $comment)
+{
+ /* фото с камеры -----------*/
+ if ( file_exists("$source") )
+ {  
+  echo ("<div class='element'><div class='dat' style='background:rgb($rbgcalc,0,0);background:linear-gradient(to bottom, #FFFFFF, rgb($rbgcalc,0,0));' ");
+  echo (" data-title='$comment'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
+  echo ("</div><div class='text'>$title");
+  echo ("</div><div class='note'>");
   echo ("</div></div>");
  }
 }
