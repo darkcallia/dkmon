@@ -65,7 +65,7 @@ get_foto()
 {
  #Получаем фото с камеры
  cd $path/data;
- wget http://192.168.1.111/picture.jpg 
+ wget -q "http://192.168.1.111/picture.jpg"; 
 }
 #-------------------------------------
 run_monitoring(){
