@@ -191,7 +191,7 @@ service_hddsize("data/ro-0.203-disk2.txt", 7, "Файловый РО. Второ
 service_trafic("data/ro-to-f1-traf.txt", 20, "Траффик РО -> Ф1", "Траффик от РО до Ф1.");
 service_trafic("data/f1-to-ro-traf.txt", 20, "Траффик Ф1 -> РО", "Траффик от Ф1 до РО.");
 service_light_button("/dev/ttyS1", "Ledon", "Ledoff");
-service_foto("http://192.168.1.111/picture.jpg", "Фото с камеры", "<img src='192.168.1.111/picture.jpg'></img>");
+service_foto("data/picture.jpg", "Фото с камеры", "");
 /*----------------------------------------------*/
 /* конец блоков--------*/
 echo ("</div>");

@@ -61,6 +61,13 @@ get_temperature()
  echo $data | awk -F"<t2>" '{ print $2 }' | awk -F"</t2>" '{ print $1 }' > /var/www/dkmon/data/temperaturet2.txt
 }
 #-------------------------------------
+get_foto()
+{
+ #Получаем фото с камеры
+ cd $path/data;
+ wget http://192.168.1.111/picture.jpg 
+}
+#-------------------------------------
 run_monitoring(){
  #Для каждого хоста из списка, содержащегося в БД
  #последовательно выполняем функцию check_host
@@ -271,6 +278,7 @@ check_host(){
 #get_sambafree_space "//10.51.0.203/f$" "fssadmin%rf;#j[j#;tk#pyf" "ro51" 4194304 "ro-0.203-disk2.txt"
 #get_traf
 #get_temperature
+#get_foto
 #run_monitoring
 #не выполняем скрипт мониторинга портов в определенные часы
 hour_now=$(date +%H)

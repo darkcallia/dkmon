@@ -192,9 +192,9 @@ function service_foto($source, $title, $comment)
 {
  /* фото с камеры -----------*/
  if ( file_exists("$source") )
- {  
-  echo ("<div class='element'><div class='dat' style='background:rgb($rbgcalc,0,0);background:linear-gradient(to bottom, #FFFFFF, rgb($rbgcalc,0,0));' ");
-  echo (" data-title='$comment'><font style='color:rgb($rbgcalcinverse,255,255);'>$L1</font>");
+ {
+  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
+  echo (" data-title=''><img width=40% height=100% src='$source' onclick='javascript:document.location.href=\"$source\"'> </img>");
   echo ("</div><div class='text'>$title");
   echo ("</div><div class='note'>");
   echo ("</div></div>");
