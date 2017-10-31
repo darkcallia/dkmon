@@ -192,6 +192,7 @@ service_trafic("data/ro-to-f1-traf.txt", 20, "Траффик РО -> Ф1", "Тр
 service_trafic("data/f1-to-ro-traf.txt", 20, "Траффик Ф1 -> РО", "Траффик от Ф1 до РО.");
 service_light_button("/dev/ttyS1", "Ledon", "Ledoff");
 service_foto("data/picture.jpg", "Фото с камеры", "");
+service_graph("http://192.168.1.111/rrd/temp.png", "График температуры процессора", "");
 /*----------------------------------------------*/
 /* конец блоков--------*/
 echo ("</div>");

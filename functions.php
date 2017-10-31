@@ -201,6 +201,19 @@ function service_foto($source, $title, $comment)
  }
 }
 /*---------------------*/
+function service_graph($source, $title, $comment)
+{
+ /* вывод графика -----------*/
+ if ( file_exists("$source") )
+ {
+  echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
+  echo (" data-title=''><img width=40% height=100% src='$source' onclick='javascript:document.location.href=\"$source\"'>");
+  echo ("</div><div class='text'>$title");
+  echo ("</div><div class='note'>");
+  echo ("</div></div>");
+ }
+}
+/*---------------------*/
 function service_light_button($device, $cmdon, $cmdoff)
 {
  /* Включалка светодиодов на Arduino -----------*/
