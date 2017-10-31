@@ -106,7 +106,7 @@ function inserttest($db)
 function service_temperature($source, $limit, $title, $comment)
 {
  /* датчик температуры--*/
- if ( file_exists("$source") )
+ if ( false!==file("$source") )
  {
   $t2=file_get_contents("$source");
 //  $t2=substr($temperature2, strpos($temperature2, "<T1>")+4, strpos($temperature2, "</T1>")-(strpos($temperature2, "<T1>")+4));
@@ -130,7 +130,7 @@ function service_temperature($source, $limit, $title, $comment)
 function service_motiontime($source, $title)
 {
  /* Движение в СП2-------*/
- if ( file_exists("$source") )
+ if ( false!==file("$source") )
  {
   $checkmotion=file_get_contents("$source");
   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));'><font color=brown>$checkmotion</font>");
@@ -143,7 +143,7 @@ function service_motiontime($source, $title)
 function service_motionactive($source, $title, $comment)
 {
  /* датчик движения -----------*/
- if ( file_exists("$source") )
+ if ( false!==file("$source") )
  {
   $motion=file_get_contents("$source");
   $M1=substr($motion, strpos($motion, "<M1>")+4, strpos($motion, "</M1>")-(strpos($motion, "<M1>")+4));
@@ -171,7 +171,7 @@ function service_motionactive($source, $title, $comment)
 function service_light($source, $title, $comment)
 {
  /* датчик света -----------*/
- if ( file_exists("$source") )
+ if ( false!==file("$source") )
  {
   $light=file_get_contents("$source");
   $L1=substr($light, strpos($light, "<L1>")+4, strpos($light, "</L1>")-(strpos($light, "<L1>")+4));
@@ -191,7 +191,7 @@ function service_light($source, $title, $comment)
 function service_foto($source, $title, $comment)
 {
  /* фото с камеры -----------*/
- if ( file_exists("$source") )
+ if ( false!==file("$source") )
  {
   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
   echo (" data-title=''><img width=40% height=100% src='$source' onclick='javascript:document.location.href=\"$source\"'>");
@@ -204,7 +204,7 @@ function service_foto($source, $title, $comment)
 function service_graph($source, $title, $comment)
 {
  /* вывод графика -----------*/
- if ( file_exists("$source") )
+ if ( false!==file("$source") )
  {
   echo ("<div class='element'><div class='dat' style='background:rgb(160,203,169);background:linear-gradient(rgb(160,203,169), rgb(99,169,113));' ");
   echo (" data-title=''><img width=40% height=100% src='$source' onclick='javascript:document.location.href=\"$source\"'>");
